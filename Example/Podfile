@@ -1,0 +1,12 @@
+use_frameworks!
+
+target 'Kitemetrics_Example' do
+  pod 'Kitemetrics', :path => '../'
+    pod 'SnapKit'
+
+  target 'Kitemetrics_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end

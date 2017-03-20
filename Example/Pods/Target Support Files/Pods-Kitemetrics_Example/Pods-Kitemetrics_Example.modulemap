@@ -1,0 +1,6 @@
+framework module Pods_Kitemetrics_Example {
+  umbrella header "Pods-Kitemetrics_Example-umbrella.h"
+
+  export *
+  module * { export * }
+}

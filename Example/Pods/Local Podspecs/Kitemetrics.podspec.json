@@ -1,0 +1,22 @@
+{
+  "name": "Kitemetrics",
+  "version": "0.1.0",
+  "summary": "iOS App analytics, attribution, and reporting.",
+  "description": "Kitemetrics allows you to determine a user's lifetime value (LTV) segmented by Apple Search Ads campaigns and keywords.",
+  "homepage": "https://github.com/kitefaster/Kitemetrics",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "Kitefaster, LLC": "h@kitefaster.com"
+  },
+  "source": {
+    "git": "https://github.com/kitefaster/Kitemetrics.git",
+    "tag": "0.1.0"
+  },
+  "platforms": {
+    "ios": "8.0"
+  },
+  "source_files": "Kitemetrics/Classes/**/*"
+}

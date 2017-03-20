@@ -1,0 +1,6 @@
+framework module Kitemetrics {
+  umbrella header "Kitemetrics-umbrella.h"
+
+  export *
+  module * { export * }
+}
