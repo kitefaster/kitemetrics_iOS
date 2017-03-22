@@ -23,8 +23,12 @@ enum KFInstallType: Int {
     case osChange = 5
 }
 
-enum KFPurchaseType: Int {
-    case appleInApp = 1
+public enum KFPurchaseTypeValue: Int {
+    case appleInAppUnknown = 1
+    case appleInAppConsumable = 2
+    case appleInAppNonConsumable = 3
+    case appleInAppAutoRenewableSubscription = 4
+    case appleInAppNonRenewingSubscription = 5
 }
 
 class KFHelper {
@@ -134,7 +138,7 @@ class KFHelper {
         return dict
     }
     
-    class func purchaseDict(_ product: SKProduct, quantity: Int, funnel: KFPurchaseFunnel) -> [String: Any] {
+    class func purchaseDict(_ product: SKProduct, quantity: Int, funnel: KFPurchaseFunnel, purchaseType: KFPurchaseTypeValue?) -> [String: Any] {
         var dict = [String: Any]()
         dict["timestamp"] = Date().timeIntervalSince1970
         dict["price"] = product.price.floatValue
@@ -142,7 +146,13 @@ class KFHelper {
         dict["productIdentifier"] = product.productIdentifier
         dict["quantity"] = quantity
         dict["funnel"] = funnel.rawValue
-        dict["purchaseType"] = KFPurchaseType.appleInApp.rawValue
+        if product.isDownloadable == true {
+            dict["purchaseTypeValue"] = KFPurchaseTypeValue.appleInAppNonConsumable.rawValue
+        } else if purchaseType == nil {
+            dict["purchaseTypeValue"] = KFPurchaseTypeValue.appleInAppUnknown.rawValue
+        } else {
+             dict["purchaseTypeValue"] = purchaseType?.rawValue
+        }
         
         if let versionId = KFUserDefaults.versionId() {
             if versionId > 0 {
@@ -184,8 +194,8 @@ class KFHelper {
         return jsonFromDictionary(errorDict(error, isInternal: isInternal), logErrors: false)
     }
     
-    class func purchaseJson(_ product: SKProduct, quantity: Int, funnel: KFPurchaseFunnel)-> Data? {
-        return jsonFromDictionary(purchaseDict(product, quantity: quantity, funnel: funnel))
+    class func purchaseJson(_ product: SKProduct, quantity: Int, funnel: KFPurchaseFunnel, purchaseType: KFPurchaseTypeValue?)-> Data? {
+        return jsonFromDictionary(purchaseDict(product, quantity: quantity, funnel: funnel, purchaseType: purchaseType))
     }
     
     class func jsonFromDictionary(_ dictionary: [AnyHashable:Any], logErrors: Bool = true) -> Data? {
