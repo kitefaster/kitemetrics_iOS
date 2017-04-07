@@ -8,6 +8,7 @@
 
 import Foundation
 import AdSupport
+import UIKit
 
 
 public class KFDevice {
@@ -66,7 +67,7 @@ public class KFDevice {
     public class func deviceType() -> String {
         var systemInfo = utsname()
         uname(&systemInfo)
-        guard let deviceType = NSString(bytes: &systemInfo.machine, length: Int(_SYS_NAMELEN), encoding: String.Encoding.ascii.rawValue) as? String else {
+        guard let deviceType = NSString(bytes: &systemInfo.machine, length: Int(_SYS_NAMELEN), encoding: String.Encoding.ascii.rawValue) as String? else {
             return KFDevice.model()
         }
         return deviceType

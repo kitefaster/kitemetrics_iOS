@@ -29,6 +29,7 @@ public enum KFPurchaseTypeValue: Int {
     case appleInAppNonConsumable = 3
     case appleInAppAutoRenewableSubscription = 4
     case appleInAppNonRenewingSubscription = 5
+    case applePaidApp = 6
 }
 
 class KFHelper {
