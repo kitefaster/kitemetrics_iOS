@@ -1,0 +1,22 @@
+PODS:
+  - Flurry-iOS-SDK/FlurryAds (7.10.0):
+    - Flurry-iOS-SDK/FlurrySDK
+  - Flurry-iOS-SDK/FlurrySDK (7.10.0)
+  - Kitemetrics (0.1.0)
+
+DEPENDENCIES:
+  - Flurry-iOS-SDK/FlurryAds
+  - Flurry-iOS-SDK/FlurrySDK
+  - Kitemetrics (from `/Users/mcl/dev/kitefasterDev/Kitemetrics/kitemetrics_iOS`)
+
+EXTERNAL SOURCES:
+  Kitemetrics:
+    :path: "/Users/mcl/dev/kitefasterDev/Kitemetrics/kitemetrics_iOS"
+
+SPEC CHECKSUMS:
+  Flurry-iOS-SDK: e6975df9e57010d582bf9bed0f6312553cf24bc2
+  Kitemetrics: 4d4309273bbf4cb043e1dbb6abd0cd9afa31a415
+
+PODFILE CHECKSUM: fca5f524c47e435b1108b28caea4031e0f1b9022
+
+COCOAPODS: 1.2.0

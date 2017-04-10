@@ -1,0 +1,14 @@
+platform :ios, '8.0'
+
+target 'KitemetricsObjC' do
+  use_frameworks!
+  
+  
+  # Pods for KitemetricsObjC
+  pod 'Kitemetrics', :path => '/Users/mcl/dev/kitefasterDev/Kitemetrics/kitemetrics_iOS'
+  
+  #Pods for Flurry
+  pod 'Flurry-iOS-SDK/FlurrySDK' #Analytics Pod
+  pod 'Flurry-iOS-SDK/FlurryAds' #Advertising Pod (requires Analytics)
+
+end
