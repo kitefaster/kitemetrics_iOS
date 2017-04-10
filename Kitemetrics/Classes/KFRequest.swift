@@ -62,14 +62,25 @@ class KFRequest {
         }
         
         URLSession.shared.dataTask(with: request) {data, response, err in
+            var userInfo : [String : Any]
+            if filename == nil {
+                userInfo = ["request" : request]
+            } else {
+                 userInfo = ["filename": filename!, "request" : request]
+            }
+            
             if err != nil {
                 KFError.logErrorMessage("Error sending request. " + err!.localizedDescription, sendToServer: sendToServer)
-                NotificationCenter.default.post(name: Notification.Name(rawValue: "com.kitefaster.KFRequest.Post.Error"), object: nil, userInfo: ["filename": filename!, "request" : request])
+                if !isImmediate {
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: "com.kitefaster.KFRequest.Post.Error"), object: nil, userInfo: userInfo)
+                }
                 return
             }
             guard let httpResponse = response as? HTTPURLResponse else {
                 KFError.logErrorMessage("HTTPURLResponse is nil.", sendToServer: sendToServer)
-                NotificationCenter.default.post(name: Notification.Name(rawValue: "com.kitefaster.KFRequest.Post.Error"), object: nil, userInfo: ["filename": filename!, "request" : request])
+                if !isImmediate {
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: "com.kitefaster.KFRequest.Post.Error"), object: nil, userInfo: userInfo)
+                }
                 return
             }
             
@@ -104,12 +115,12 @@ class KFRequest {
                         KFLog.p("Posted " + request.url!.lastPathComponent)
                     }
                     if !isImmediate {
-                        NotificationCenter.default.post(name: Notification.Name(rawValue: "com.kitefaster.KFRequest.Post.Success"), object: nil, userInfo: ["filename": filename!, "request" : request])
+                        NotificationCenter.default.post(name: Notification.Name(rawValue: "com.kitefaster.KFRequest.Post.Success"), object: nil, userInfo: userInfo)
                     }
                 } catch {
                     KFError.logErrorMessage("Error with Json from 200: \(error.localizedDescription)", sendToServer: sendToServer)
                     if !isImmediate {
-                        NotificationCenter.default.post(name: Notification.Name(rawValue: "com.kitefaster.KFRequest.Post.Error"), object: nil, userInfo: ["filename": filename!, "request" : request])
+                        NotificationCenter.default.post(name: Notification.Name(rawValue: "com.kitefaster.KFRequest.Post.Error"), object: nil, userInfo: userInfo)
                     }
                 }
             } else {
@@ -124,13 +135,13 @@ class KFRequest {
                         if let error = json["error"] {
                             KFError.logErrorMessage(error, sendToServer: false)
                             if !isImmediate {
-                                NotificationCenter.default.post(name: Notification.Name(rawValue: "com.kitefaster.KFRequest.Post.Error"), object: nil, userInfo: ["filename": filename!, "request" : request])
+                                NotificationCenter.default.post(name: Notification.Name(rawValue: "com.kitefaster.KFRequest.Post.Error"), object: nil, userInfo: userInfo)
                             }
                         }
                     } catch {
                         KFError.logErrorMessage("Error with Json from \(statusCode): \(error.localizedDescription)", sendToServer: sendToServer)
                         if !isImmediate {
-                            NotificationCenter.default.post(name: Notification.Name(rawValue: "com.kitefaster.KFRequest.Post.Error"), object: nil, userInfo: ["filename": filename!, "request" : request])
+                            NotificationCenter.default.post(name: Notification.Name(rawValue: "com.kitefaster.KFRequest.Post.Error"), object: nil, userInfo: userInfo)
                         }
                     }
                 }
