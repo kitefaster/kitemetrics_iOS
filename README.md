@@ -111,6 +111,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 To run the example project, clone the repo, and run `pod install` from the Example directory first.
 
+## Notes
+
+Kitemetrics uses the Advertising Identifier (IDFA).  When submitting an app to Apple you should answer Yes to the Advertising Identifier question and check the box next to "Attribute an action taken within this app to a previously served advertisement".
+
 ## License
 
 The Kitemetrics iOS client SDK is available under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0). See the LICENSE file for more info.
