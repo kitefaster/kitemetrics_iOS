@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'Kitemetrics'
-  s.version          = '0.1.0'
+  s.version          = '1.0.0'
   s.summary          = 'iOS App Analytics, Attribution, and Reporting.'
 
 # This description is used to generate tags and improve search results.
@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
   s.description      = <<-DESC
-Kitemetrics allows you to determine a user's lifetime value (LTV) segmented by Apple Search Ads campaigns and keywords.
+Kitemetrics provides keyword level attribution for Apple Search Ads.
                        DESC
 
   s.homepage         = 'https://github.com/kitefaster/kitemetrics_iOS'
