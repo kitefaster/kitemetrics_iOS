@@ -93,8 +93,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     Kitemetrics.shared.logPurchase(skProduct, quantity: 1)
     Kitemetrics.shared.logError("Test Error")
     Kitemetrics.shared.logEvent("Test Event")
-    Kitemetrics.shared.logInvite(method: "Test Invite", code: "Test Code 001")
-    Kitemetrics.shared.logSignUp(method: "Test User", userIdentifier: "Test User Id 001")
+    Kitemetrics.shared.logInvite(method: "textMessage", code: "Test Code 001")
+    Kitemetrics.shared.logSignUp(method: "email", userIdentifier: "Test User Id 001")
 ```
 
 ##### Objective-C
@@ -103,8 +103,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     [[Kitemetrics shared] logPurchase:skProduct quantity:1];
     [[Kitemetrics shared] logError:@"Test Error"];
     [[Kitemetrics shared] logEvent:@"Test Event"];
-    [[Kitemetrics shared] logInviteWithMethod:@"Test Invite" code: @"Test Code 001"];
-    [[Kitemetrics shared] logSignUpWithMethod:@"Test User" userIdentifier:@"Test User Id 001"];
+    [[Kitemetrics shared] logInviteWithMethod:@"textMessage" code: @"Test Code 001"];
+    [[Kitemetrics shared] logSignUpWithMethod:@"email" userIdentifier:@"Test User Id 001"];
 ```
 
 ## Example
