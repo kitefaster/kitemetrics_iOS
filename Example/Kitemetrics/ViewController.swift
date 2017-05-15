@@ -55,6 +55,19 @@ class ViewController: UIViewController {
             make.height.equalTo(44)
         }
         
+        let eventRedeemInviteButton = UIButton(type: .custom)
+        eventRedeemInviteButton.backgroundColor = UIColor.black
+        eventRedeemInviteButton.setTitle("Create Redeem Invite Event", for: .normal)
+        eventRedeemInviteButton.addTarget(self, action: #selector(createEventRedeemInvite), for: .touchUpInside)
+        self.view.addSubview(eventRedeemInviteButton)
+        eventRedeemInviteButton.snp.makeConstraints {
+            (make) -> Void in
+            make.top.equalTo(eventInviteButton.snp.bottom).offset(20)
+            make.centerX.equalTo(self.view)
+            make.width.equalTo(400)
+            make.height.equalTo(44)
+        }
+        
         let errorButton = UIButton(type: .custom)
         errorButton.backgroundColor = UIColor.black
         errorButton.setTitle("Create Error", for: .normal)
@@ -62,7 +75,7 @@ class ViewController: UIViewController {
         self.view.addSubview(errorButton)
         errorButton.snp.makeConstraints {
             (make) -> Void in
-            make.top.equalTo(eventInviteButton.snp.bottom).offset(20)
+            make.top.equalTo(eventRedeemInviteButton.snp.bottom).offset(20)
             make.centerX.equalTo(self.view)
             make.width.equalTo(400)
             make.height.equalTo(44)
@@ -75,11 +88,15 @@ class ViewController: UIViewController {
     }
     
     func createEventSignUp() {
-        Kitemetrics.shared.logSignUp(method: "Test Sign Up", userIdentifier: "Test Sign Up User Id 0001")
+        Kitemetrics.shared.logSignUp(method: "email", userIdentifier: "012345abc")
     }
     
     func createEventInvite() {
         Kitemetrics.shared.logInvite(method: "Test Invite", code: "Test Invite Code 0001")
+    }
+    
+    func createEventRedeemInvite() {
+        Kitemetrics.shared.logRedeemInvite(code: "Test Invite Code 0001")
     }
     
     func createError() {

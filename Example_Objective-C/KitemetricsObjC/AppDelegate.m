@@ -27,7 +27,8 @@
     [[Kitemetrics shared] logError:@"Test Error"];
     [[Kitemetrics shared] logEvent:@"Test Event"];
     [[Kitemetrics shared] logInviteWithMethod:@"Test Invite" code: @"Test Code 001"];
-    [[Kitemetrics shared] logSignUpWithMethod:@"Test User" userIdentifier:@"Test User Id 001"];
+    [[Kitemetrics shared] logRedeemInviteWithCode:@"Test Code 001"];
+    [[Kitemetrics shared] logSignUpWithMethod:@"email" userIdentifier:@"012345abc"];
     return YES;
 }
 
