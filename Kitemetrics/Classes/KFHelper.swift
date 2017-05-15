@@ -125,6 +125,19 @@ class KFHelper {
         return dict
     }
     
+    class func eventRedeemInviteDict(code: String) -> [String: Any] {
+        var dict = [String: Any]()
+        dict["timestamp"] = Date().timeIntervalSince1970
+        dict["code"] = code.truncate(255)
+        
+        if let versionId = KFUserDefaults.versionId() {
+            if versionId > 0 {
+                dict["versionId"] = versionId
+            }
+        }
+        return dict
+    }
+    
     class func errorDict(_ error: String, isInternal: Bool) -> [String: Any] {
         var dict = [String: Any]()
         dict["timestamp"] = Date().timeIntervalSince1970
@@ -189,6 +202,10 @@ class KFHelper {
     
     class func eventInviteJson(method: String, code: String?) -> Data? {
         return jsonFromDictionary(eventInviteDict(method: method, code: code))
+    }
+    
+    class func eventRedeemInviteJson(code: String) -> Data? {
+        return jsonFromDictionary(eventRedeemInviteDict(code: code))
     }
     
     class func errorJson(_ error: String, isInternal: Bool) -> Data? {

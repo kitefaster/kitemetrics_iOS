@@ -26,6 +26,7 @@ public class Kitemetrics: NSObject {
     static let kEvents = "events"
     static let kEventSignUps = "eventSignUps"
     static let kEventInvites = "eventInvites"
+    static let kEventRedeemInvites = "eventRedeemInvites"
     static let kErrors = "errors"
     static let kPurchases = "purchases"
     static let kAttributions = "attributions"
@@ -37,6 +38,7 @@ public class Kitemetrics: NSObject {
     static let kEventsEndpoint = kServer + kAPI + kEvents
     static let kEventSignUpsEndpoint = kServer + kAPI + kEventSignUps
     static let kEventInviteEndpoint = kServer + kAPI + kEventInvites
+    static let kEventRedeemInviteEndpoint = kServer + kAPI + kEventRedeemInvites
     static let kErrorsEndpoint = kServer + kAPI + kErrors
     static let kPurchasesEndpoint = kServer + kAPI + kPurchases
     static let kAttributionsEndpoint = kServer + kAPI + kAttributions
@@ -246,6 +248,22 @@ public class Kitemetrics: NSObject {
         
         var request = URLRequest(url: URL(string: Kitemetrics.kEventInviteEndpoint)!)
         guard let json = KFHelper.eventInviteJson(method: method, code: code) else {
+            return
+        }
+        request.httpBody = json
+        
+        self.queue.addItem(item: request)
+    }
+    
+    ///Log when a user redeems an invite code.
+    ///- parameter code: Referral or other invite code used.
+    public func logRedeemInvite(code: String) {
+        if code.characters.count > 255 {
+            KFError.printError("Length of code must be less than 256 characters. Truncating.")
+        }
+        
+        var request = URLRequest(url: URL(string: Kitemetrics.kEventRedeemInviteEndpoint)!)
+        guard let json = KFHelper.eventRedeemInviteJson(code: code) else {
             return
         }
         request.httpBody = json
