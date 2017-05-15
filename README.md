@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/cocoapods/l/Kitemetrics.svg?style=flat)](http://cocoapods.org/pods/Kitemetrics)
 [![Platform](https://img.shields.io/cocoapods/p/Kitemetrics.svg?style=flat)](http://cocoapods.org/pods/Kitemetrics) -->
 
-The Kitemetrics iOS Client SDK logs user sessions, events and Apple Search Ads keyword attribution data over https and SSL to the Kitemetrics server.  Reports are available from http://kitemetrics.com/.
+The Kitemetrics iOS Client SDK automatically logs Apple Search Ads keyword attributions, installs, and user sessions. In addition, you can log sign up and other custom events.  Reports are available from [http://kitemetrics.com/](http://kitemetrics.com/?utm_source=github&utm_medium=readme&utm_campaign=cp).
 
 ## Contents
 
@@ -13,6 +13,8 @@ The Kitemetrics iOS Client SDK logs user sessions, events and Apple Search Ads k
 - [Installation](#installation)
 - [Usage](#usage)
 - [Example](#example)
+- [Documentation](#documentation)
+- [Notes](#notes)
 - [License](#license)
 
 ## Requirements
@@ -56,7 +58,7 @@ If you want to support iOS 7 or prefer not to use the CocoaPods dependency manag
 
 ## Usage
 
-#### Initialize the session in AppDelegate.swift
+#### Initialize the session in AppDelegate
 ##### Swift 3.0
 ```swift
 import Kitemetrics
@@ -86,34 +88,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 ```
 
-#### Log purchases and events
+#### Log purchase and Sign Up Events
 ##### Swift 3.0
 ```swift
-    Kitemetrics.shared.logAddToCart(skProduct, quantity: 1)
     Kitemetrics.shared.logPurchase(skProduct, quantity: 1)
-    Kitemetrics.shared.logError("Test Error")
-    Kitemetrics.shared.logEvent("Test Event")
-    Kitemetrics.shared.logInvite(method: "textMessage", code: "Test Code 001")
-    Kitemetrics.shared.logSignUp(method: "email", userIdentifier: "Test User Id 001")
+    Kitemetrics.shared.logSignUp(method: "email", userIdentifier: "12345abc")
 ```
 
 ##### Objective-C
 ```objective-c
-    [[Kitemetrics shared] logAddToCart:skProduct quantity:1];
     [[Kitemetrics shared] logPurchase:skProduct quantity:1];
-    [[Kitemetrics shared] logError:@"Test Error"];
-    [[Kitemetrics shared] logEvent:@"Test Event"];
-    [[Kitemetrics shared] logInviteWithMethod:@"textMessage" code: @"Test Code 001"];
-    [[Kitemetrics shared] logSignUpWithMethod:@"email" userIdentifier:@"Test User Id 001"];
+    [[Kitemetrics shared] logSignUpWithMethod:@"email" userIdentifier:@"12345abc"];
 ```
+
+Full list of pre-defined and custom events are available at the full [documentation](http://kitemetrics.com/docs/?utm_source=github&utm_medium=readme&utm_campaign=cp).
 
 ## Example
 
 To run the example project, clone the repo, and run `pod install` from the Example directory first.
 
+## Documentation
+
+Full documentation is available at [http://kitemetrics.com/docs/](http://kitemetrics.com/docs/?utm_source=github&utm_medium=readme&utm_campaign=cp).
+
 ## Notes
 
-Kitemetrics uses the Advertising Identifier (IDFA).  When submitting an app to Apple you should answer Yes to the Advertising Identifier question and check the box next to "Attribute an action taken within this app to a previously served advertisement".
+Kitemetrics uses the Advertising Identifier (IDFA).  When submitting an app to Apple you should answer "Yes" to the Advertising Identifier question and check the box next to "Attribute an action taken within this app to a previously served advertisement".
 
 ## License
 
