@@ -292,7 +292,7 @@ public class Kitemetrics: NSObject {
     }
     
     ///Log when a user adds an in-app item to their cart
-    public func logAddToCart(_ product: SKProduct, quantity: Int, purchaseType: KFPurchaseTypeValue? = .appleInAppUnknown) {
+    public func logAddToCart(_ product: SKProduct, quantity: Int, purchaseType: KFPurchaseType? = .appleInAppUnknown) {
         var request = URLRequest(url: URL(string: Kitemetrics.kPurchasesEndpoint)!)
         guard let json = KFHelper.purchaseJson(product, quantity: quantity, funnel: KFPurchaseFunnel.addToCart, purchaseType: purchaseType) else {
             return
@@ -302,8 +302,18 @@ public class Kitemetrics: NSObject {
         self.queue.addItem(item: request)
     }
     
+    public func logInAppPurchase(_ product: SKProduct, quantity: Int) {
+        var request = URLRequest(url: URL(string: Kitemetrics.kPurchasesEndpoint)!)
+        guard let json = KFHelper.purchaseJson(product, quantity: quantity, funnel: KFPurchaseFunnel.purchase, purchaseType: KFPurchaseType.appleInAppUnknown) else {
+            return
+        }
+        request.httpBody = json
+        
+        self.queue.addItem(item: request)
+    }
+    
     ///Log when a user completes an in-app purchase
-    public func logPurchase(_ product: SKProduct, quantity: Int, purchaseType: KFPurchaseTypeValue? = .appleInAppUnknown) {
+    public func logPurchase(_ product: SKProduct, quantity: Int, purchaseType: KFPurchaseType? = .appleInAppUnknown) {
         var request = URLRequest(url: URL(string: Kitemetrics.kPurchasesEndpoint)!)
         guard let json = KFHelper.purchaseJson(product, quantity: quantity, funnel: KFPurchaseFunnel.purchase, purchaseType: purchaseType) else {
             return

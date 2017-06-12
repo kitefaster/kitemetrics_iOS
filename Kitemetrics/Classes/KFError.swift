@@ -34,6 +34,9 @@ class KFError {
         KFLog.forcePrint("========== Kitemetrics ERROR: " + errorMessage)
     }
     
+    class func printWarning(_ errorMessage: String) {
+        KFLog.forcePrint("========== Kitemetrics WARNING: " + errorMessage)
+    }
     
     
 }

@@ -5,10 +5,6 @@ target 'KitemetricsObjC' do
   
   
   # Pods for KitemetricsObjC
-  pod 'Kitemetrics', :path => '/Users/mcl/dev/kitefasterDev/Kitemetrics/kitemetrics_iOS'
-  
-  #Pods for Flurry
-  pod 'Flurry-iOS-SDK/FlurrySDK' #Analytics Pod
-  pod 'Flurry-iOS-SDK/FlurryAds' #Advertising Pod (requires Analytics)
+  pod 'Kitemetrics', :path => ‘../‘
 
 end

@@ -7,7 +7,6 @@
 //
 
 #import "AppDelegate.h"
-@import Flurry_iOS_SDK;
 @import Kitemetrics;
 
 @interface AppDelegate ()
@@ -18,12 +17,10 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    [Flurry startSession:@"FLURRY_API_KEY" withSessionBuilder:[[[FlurrySessionBuilder new] withCrashReporting:YES] withLogLevel:FlurryLogLevelDebug]];
-    
     [[Kitemetrics shared] initSessionWithApiKey:@"API_KEY" userIdentifier:@""];
     
 //    [[Kitemetrics shared] logAddToCart:skProduct quantity:1];
-//    [[Kitemetrics shared] logPurchase:skProduct quantity:1];
+//    [[Kitemetrics shared] logInAppPurchase:skProduct quantity:1];
     [[Kitemetrics shared] logError:@"Test Error"];
     [[Kitemetrics shared] logEvent:@"Test Event"];
     [[Kitemetrics shared] logInviteWithMethod:@"Test Invite" code: @"Test Code 001"];
