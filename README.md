@@ -91,13 +91,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 #### Log purchase and Sign Up Events
 ##### Swift 3.0
 ```swift
-    Kitemetrics.shared.logPurchase(skProduct, quantity: 1)
+    Kitemetrics.shared.logInAppPurchase(skProduct, quantity: 1)
     Kitemetrics.shared.logSignUp(method: "email", userIdentifier: "12345abc")
 ```
 
 ##### Objective-C
 ```objective-c
-    [[Kitemetrics shared] logPurchase:skProduct quantity:1];
+    [[Kitemetrics shared] logInAppPurchase:skProduct quantity:1];
     [[Kitemetrics shared] logSignUpWithMethod:@"email" userIdentifier:@"12345abc"];
 ```
 
