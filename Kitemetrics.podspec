@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
   s.description      = <<-DESC
-Kitemetrics provides keyword level attribution for Apple Search Ads.  It associates each attribution to an In-App Purchase.  The Kitemetrics web service calculates the Average Revenue per User.
+Kitemetrics provides keyword level attribution for Apple Search Ads. It associates each attribution to an In-App Purchase. The Kitemetrics web service calculates the Average Revenue per User.
                        DESC
 
   s.homepage         = 'https://github.com/kitefaster/kitemetrics_iOS'
