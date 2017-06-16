@@ -42,7 +42,7 @@ platform :ios, '8.0'
 use_frameworks!
 
 target '<Your Target Name>' do
-    pod 'Kitemetrics', :git => 'git@github.com:kitefaster/kitemetrics_iOS.git', :branch => 'master'
+    pod 'Kitemetrics'
 end
 ```
 
@@ -83,7 +83,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    [[Kitemetrics shared] initSessionWithApiKey:@"API_KEY" userIdentifier:@""];
+    [[Kitemetrics shared] initSessionWithApiKey:@"API_KEY"];
     return YES;
 }
 ```
