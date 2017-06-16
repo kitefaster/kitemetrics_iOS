@@ -92,7 +92,7 @@ class ViewController: UIViewController {
     }
     
     func createEventInvite() {
-        Kitemetrics.shared.logInvite(method: "Test Invite", code: "Test Invite Code 0001")
+        Kitemetrics.shared.logInvite(method: "Test Invite Method", code: "Test Invite Code 0001")
     }
     
     func createEventRedeemInvite() {

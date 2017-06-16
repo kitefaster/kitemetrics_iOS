@@ -238,7 +238,7 @@ public class Kitemetrics: NSObject {
     ///Log when a user shares or invites someone to use the app.
     ///- parameter method: The method used to send the invite (e.g. Facebook, Twitter, Email, Text)
     ///- parameter code: Optional. Referral or other invite code used.
-    public func logInvite(method: String, code: String?) {
+    public func logInvite(method: String, code: String? = nil) {
         if method.characters.count > 255 {
             KFError.printError("Length of method must be less than 256 characters. Truncating.")
         }
