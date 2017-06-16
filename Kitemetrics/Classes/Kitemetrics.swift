@@ -57,23 +57,24 @@ public class Kitemetrics: NSObject {
         sessionManager.delegate = self
     }
     
+    public func initSession(apiKey: String) {
+        initSession(apiKey: apiKey, userIdentifier: "")
+    }
+    
     ///Call on app startup, preferablly in AppDelegate application(_:didFinishLaunchingWithOptions:)
     ///- parameter apiKey: Obtain the apiKey from http://kitemetrics.com
     ///- parameter userIdentifier: Optional.  This is used for tracking the number of active users.  Do not use Personally Identifiable Information (e.g. email addresses, phone numbers, full name, social security numbers, etc).
-    public func initSession(apiKey: String, userIdentifier: String? = "") {
+    public func initSession(apiKey: String, userIdentifier: String) {
         KFLog.p("Kitemetrics shared instance initialized with apiKey!")
         self.apiKey = apiKey
         
         var uid = userIdentifier
-        if uid == nil {
-            uid = ""
-        }
         if uid != "" {
-            if isEmailAddress(inputString: uid!) {
+            if isEmailAddress(inputString: uid) {
                 KFError.printError("Do not use Personally Identifiable Information (e.g. email addresses, phone numbers, full name, social security numbers, etc) as the userIdentifier.")
                 uid = ""
             } else {
-                self.userIdentifier = uid!
+                self.userIdentifier = uid
             }
         } else {
             let lastVersion = KFUserDefaults.lastVersion()
@@ -302,24 +303,19 @@ public class Kitemetrics: NSObject {
         self.queue.addItem(item: request)
     }
     
+    ///Log when a user completes an in-app purchase
     public func logInAppPurchase(_ product: SKProduct, quantity: Int) {
-        var request = URLRequest(url: URL(string: Kitemetrics.kPurchasesEndpoint)!)
-        guard let json = KFHelper.purchaseJson(product, quantity: quantity, funnel: KFPurchaseFunnel.purchase, purchaseType: KFPurchaseType.appleInAppUnknown) else {
-            return
-        }
-        request.httpBody = json
-        
-        self.queue.addItem(item: request)
+        logInAppPurchase(product, quantity:quantity, purchaseType: KFPurchaseType.appleInAppUnknown)
     }
     
     ///Log when a user completes an in-app purchase
-    public func logPurchase(_ product: SKProduct, quantity: Int, purchaseType: KFPurchaseType? = .appleInAppUnknown) {
+    public func logInAppPurchase(_ product: SKProduct, quantity: Int, purchaseType: KFPurchaseType) {
         var request = URLRequest(url: URL(string: Kitemetrics.kPurchasesEndpoint)!)
         guard let json = KFHelper.purchaseJson(product, quantity: quantity, funnel: KFPurchaseFunnel.purchase, purchaseType: purchaseType) else {
             return
         }
         request.httpBody = json
-
+        
         self.queue.addItem(item: request)
     }
     

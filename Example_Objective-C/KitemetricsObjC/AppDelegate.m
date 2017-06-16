@@ -17,10 +17,15 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    [[Kitemetrics shared] initSessionWithApiKey:@"API_KEY" userIdentifier:@""];
+    [[Kitemetrics shared] initSessionWithApiKey:@"API_KEY"];
+    //If userIdentifier is known on startup, you can set it here
+//    [[Kitemetrics shared] initSessionWithApiKey:@"API_KEY" userIdentifier:@"012345abc"];
     
 //    [[Kitemetrics shared] logAddToCart:skProduct quantity:1];
 //    [[Kitemetrics shared] logInAppPurchase:skProduct quantity:1];
+    //If the IAP type is know you can set it with KFPurchaseTypeAppleInAppNonConsumable or KFPurchaseTypeAppleInAppConsumable, etc.
+//    [[Kitemetrics shared] logInAppPurchase:skProduct quantity:1 purchaseType:KFPurchaseTypeAppleInAppNonConsumable];
+    
     [[Kitemetrics shared] logError:@"Test Error"];
     [[Kitemetrics shared] logEvent:@"Test Event"];
     [[Kitemetrics shared] logInviteWithMethod:@"Test Invite" code: @"Test Code 001"];

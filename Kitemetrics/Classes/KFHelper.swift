@@ -23,6 +23,7 @@ enum KFInstallType: Int {
     case osChange = 5
 }
 
+@objc
 public enum KFPurchaseType: Int {
     case appleInAppUnknown = 1
     case appleInAppConsumable = 2
