@@ -10,7 +10,7 @@ import Foundation
 
 class KFLog {
     
-    static let debug = true
+    static let debug = false
     
     static func p(_ message: String) {
         if KFLog.debug {

@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'Kitemetrics'
-  s.version          = '1.0.2'
+  s.version          = '1.0.3'
   s.summary          = 'iOS App Analytics, Apple Search Ads Attribution, and Reporting.'
 
 # This description is used to generate tags and improve search results.
@@ -32,11 +32,4 @@ Kitemetrics provides keyword level attribution for Apple Search Ads. It associat
 
   s.source_files = 'Kitemetrics/Classes/**/*'
 
-  # s.resource_bundles = {
-  #   'Kitemetrics' => ['Kitemetrics/Assets/*.png']
-  # }
-
-  # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
 end
