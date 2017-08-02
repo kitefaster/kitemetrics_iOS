@@ -16,6 +16,7 @@ enum KFPurchaseFunnel: Int {
 }
 
 enum KFInstallType: Int {
+    case unknown = 0
     case newInstall = 1
     case reinstall = 2
     case appVersionUpdate = 3
@@ -183,10 +184,6 @@ class KFHelper {
     
     class func deviceJson() -> Data? {
         return jsonFromDictionary(deviceDict())
-    }
-    
-    class func versionJson() -> Data? {
-        return jsonFromDictionary(versionDict())
     }
     
     class func sessionJson(launchTime: Date, closeTime: Date) -> Data? {

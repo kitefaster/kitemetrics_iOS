@@ -39,11 +39,17 @@ public class KFDevice {
     }
     
     public class func advertisingIdentifier() -> String {
-        if ASIdentifierManager.shared().isAdvertisingTrackingEnabled {
-            return ASIdentifierManager.shared().advertisingIdentifier.uuidString
-        } else {
+        guard let identifierManager = ASIdentifierManager.shared() else {
             return ""
         }
+        if identifierManager.isAdvertisingTrackingEnabled {
+            guard let identifier = identifierManager.advertisingIdentifier else {
+                return ""
+            }
+            return identifier.uuidString
+        }
+        
+        return ""
     }
     
     class func stringValueFromInfoDict(_ key: String) -> String {

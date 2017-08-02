@@ -51,7 +51,7 @@ public class Kitemetrics: NSObject {
     var currentBackoffMultiplier = 1
     var currentBackoffValue = 1
     
-    override init() {
+    private override init() {
         super.init()
         KFLog.p("Kitemetrics shared instance initialized!")
         sessionManager.delegate = self
@@ -112,8 +112,10 @@ public class Kitemetrics: NSObject {
                 postVersion(currentVersion, installType: KFInstallType.appVersionUpdate)
             } else if lastVersion!["userIdentifier"] != currentVersion["userIdentifier"] {
                 postVersion(currentVersion, installType: KFInstallType.userChange)
-            } else {
+            } else if lastVersion!["osVersion"] != currentVersion["osVersion"] || lastVersion!["osCountry"] != currentVersion["osCountry"] || lastVersion!["osLanguage"] != currentVersion["osLanguage"] {
                 postVersion(currentVersion, installType: KFInstallType.osChange)
+            } else {
+                postVersion(currentVersion, installType: KFInstallType.unknown)
             }
             KFUserDefaults.setLastVersion(currentVersion)
         }

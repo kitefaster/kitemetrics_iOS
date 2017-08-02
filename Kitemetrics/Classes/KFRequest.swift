@@ -181,8 +181,48 @@ class KFRequest {
         if self.requestVersionId == false {
             KFError.logErrorMessage("Need version Id", sendToServer: true)
             self.requestVersionId = true
+            
+            //TODO: Refactor duplicate code from Kitemetrics.appLaunch()
+            let lastVersion = KFUserDefaults.lastVersion()
+            let currentVersion = KFHelper.versionDict()
+            
+            var installType = KFInstallType.unknown
+            if lastVersion == nil {
+                installType = KFInstallType.newInstall
+            } else if lastVersion! != currentVersion {
+                if lastVersion!["appVersion"] != currentVersion["appVersion"] {
+                    installType = KFInstallType.appVersionUpdate
+                } else if lastVersion!["userIdentifier"] != currentVersion["userIdentifier"] {
+                    installType = KFInstallType.userChange
+                } else if lastVersion!["osVersion"] != currentVersion["osVersion"] || lastVersion!["osCountry"] != currentVersion["osCountry"] || lastVersion!["osLanguage"] != currentVersion["osLanguage"] {
+                    installType = KFInstallType.osChange
+                }
+            }
+            KFUserDefaults.setLastVersion(currentVersion)
+            
+            
+            var modifiedVersionDict: [String: Any] = currentVersion
+            modifiedVersionDict["timestamp"] = Date().timeIntervalSince1970
+            modifiedVersionDict["installType"] = installType.rawValue
+            
+            if let applicationId = KFUserDefaults.applicationId() {
+                if applicationId > 0 {
+                    modifiedVersionDict["applicationId"] = applicationId
+                } else {
+                    modifiedVersionDict["bundleId"] = KFDevice.appBundleId()
+                }
+            }
+            
+            if let deviceId = KFUserDefaults.deviceId() {
+                if deviceId > 0 {
+                    modifiedVersionDict["deviceId"] = deviceId
+                } else {
+                    modifiedVersionDict["deviceIdForVendor"] = KFDevice.identifierForVendor()
+                }
+            }
+
             var request = URLRequest(url: URL(string: Kitemetrics.kVersionsEndpoint)!)
-            guard let json = KFHelper.versionJson() else {
+            guard let json = KFHelper.jsonFromDictionary(modifiedVersionDict) else {
                 return
             }
             request.httpBody = json
