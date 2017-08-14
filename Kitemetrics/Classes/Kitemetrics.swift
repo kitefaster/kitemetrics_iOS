@@ -45,9 +45,9 @@ public class Kitemetrics: NSObject {
     
     var apiKey: String = ""
     public var userIdentifier: String = ""
-    let timerManager = KFTimerManager()
     let sessionManager = KFSessionManager()
     let queue = KFQueue()
+    let timerManager = KFTimerManager()
     var currentBackoffMultiplier = 1
     var currentBackoffValue = 1
     
@@ -62,7 +62,7 @@ public class Kitemetrics: NSObject {
     }
     
     ///Call on app startup, preferablly in AppDelegate application(_:didFinishLaunchingWithOptions:)
-    ///- parameter apiKey: Obtain the apiKey from http://kitemetrics.com
+    ///- parameter apiKey: Obtain the apiKey from https://cloud.kitemetrics.com
     ///- parameter userIdentifier: Optional.  This is used for tracking the number of active users.  Do not use Personally Identifiable Information (e.g. email addresses, phone numbers, full name, social security numbers, etc).
     public func initSession(apiKey: String, userIdentifier: String) {
         KFLog.p("Kitemetrics shared instance initialized with apiKey!")

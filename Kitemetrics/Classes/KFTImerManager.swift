@@ -48,20 +48,16 @@ class KFTimerManager {
     }
     
     func startTimer() {
-        DispatchQueue.main.async {
-            if self.timer == nil {
-                self.timer = Timer.scheduledTimer(timeInterval: KFTimerManager.kTimerInterval, target: self, selector: #selector(self.perfromTimerActions), userInfo: nil, repeats: true)
-                self.timer!.tolerance = KFTimerManager.kTimerInterval * 0.3
-            }
+        if self.timer == nil {
+            self.timer = Timer.scheduledTimer(timeInterval: KFTimerManager.kTimerInterval, target: self, selector: #selector(self.perfromTimerActions), userInfo: nil, repeats: true)
+            self.timer!.tolerance = KFTimerManager.kTimerInterval * 0.3
         }
     }
     
     func stopTimer() {
-        DispatchQueue.main.async {
-            if (self.timer != nil) {
-                self.timer!.invalidate()
-                self.timer = nil
-            }
+        if (self.timer != nil) {
+            self.timer!.invalidate()
+            self.timer = nil
         }
     }
     
