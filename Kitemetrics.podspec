@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'Kitemetrics'
-  s.version          = '1.0.5'
+  s.version          = '1.0.6'
   s.summary          = 'iOS App Analytics, Apple Search Ads Attribution, and Reporting.'
 
 # This description is used to generate tags and improve search results.
@@ -31,5 +31,7 @@ Kitemetrics provides keyword level attribution for Apple Search Ads. It associat
   s.ios.deployment_target = '8.0'
 
   s.source_files = 'Kitemetrics/Classes/**/*'
+  s.weak_framework = 'iAd'
+  s.dependency 'TrueTime'
 
 end

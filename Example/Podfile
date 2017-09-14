@@ -1,4 +1,6 @@
 use_frameworks!
+platform :ios, '8.0'
+
 
 target 'Kitemetrics_Example' do
   pod 'Kitemetrics', :path => '../'

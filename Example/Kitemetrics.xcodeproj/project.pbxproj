@@ -12,7 +12,7 @@
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
-		B436624A132FDA8DDF98EACB /* Pods_Kitemetrics_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 734193832DAB491E60838043 /* Pods_Kitemetrics_Example.framework */; };
+		9B87E6509CCBF323AA3EDC8A /* Pods_Kitemetrics_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 734193832DAB491E60838043 /* Pods_Kitemetrics_Example.framework */; };
 		DDBD99D2059F23BA3258CFFB /* Pods_Kitemetrics_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 23373BB587B0B38B4642A93D /* Pods_Kitemetrics_Tests.framework */; };
 /* End PBXBuildFile section */
 
@@ -31,6 +31,7 @@
 		3FEF165FF7C92C4D17D5A562 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		49907D43360D57451D514FAE /* Pods-Kitemetrics_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Kitemetrics_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Kitemetrics_Tests/Pods-Kitemetrics_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		4A65E8DCD1F40A391A3AA456 /* Pods-Kitemetrics_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Kitemetrics_Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-Kitemetrics_Example/Pods-Kitemetrics_Example.release.xcconfig"; sourceTree = "<group>"; };
+		604864E91F697E8000D9D15B /* iAd.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = iAd.framework; path = System/Library/Frameworks/iAd.framework; sourceTree = SDKROOT; };
 		607FACD01AFB9204008FA782 /* Kitemetrics_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Kitemetrics_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACD41AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACD51AFB9204008FA782 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -52,7 +53,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B436624A132FDA8DDF98EACB /* Pods_Kitemetrics_Example.framework in Frameworks */,
+				9B87E6509CCBF323AA3EDC8A /* Pods_Kitemetrics_Example.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -70,6 +71,7 @@
 		41286B8D8A6C08384AA0A566 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				604864E91F697E8000D9D15B /* iAd.framework */,
 				734193832DAB491E60838043 /* Pods_Kitemetrics_Example.framework */,
 				23373BB587B0B38B4642A93D /* Pods_Kitemetrics_Tests.framework */,
 			);
@@ -433,7 +435,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -473,8 +475,9 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				VALIDATE_PRODUCT = YES;
@@ -485,12 +488,23 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = F216012EAC1A28F58BB8D6B5 /* Pods-Kitemetrics_Example.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = YFZJ926957;
 				INFOPLIST_FILE = Kitemetrics/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MODULE_NAME = ExampleApp;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					"\"SnapKit\"",
+					"-framework",
+					"\"Result\"",
+					"-framework",
+					"\"TrueTime\"",
+					"-weak_framework",
+					"\"Kitemetrics\"",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.kitefaster.demo.Kitemetrics-Example";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
@@ -501,12 +515,23 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4A65E8DCD1F40A391A3AA456 /* Pods-Kitemetrics_Example.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = YFZJ926957;
 				INFOPLIST_FILE = Kitemetrics/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MODULE_NAME = ExampleApp;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					"\"SnapKit\"",
+					"-framework",
+					"\"Result\"",
+					"-framework",
+					"\"TrueTime\"",
+					"-weak_framework",
+					"\"Kitemetrics\"",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.kitefaster.demo.Kitemetrics-Example";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;

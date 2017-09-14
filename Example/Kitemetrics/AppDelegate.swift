@@ -20,6 +20,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window = UIWindow(frame: UIScreen.main.bounds)
         if let window = self.window {
             Kitemetrics.shared.initSession(apiKey: "API_KEY")
+
             let viewController = ViewController()
             window.rootViewController = viewController
             window.makeKeyAndVisible()

@@ -202,7 +202,7 @@ class KFRequest {
             
             
             var modifiedVersionDict: [String: Any] = currentVersion
-            modifiedVersionDict["timestamp"] = Date().timeIntervalSince1970
+            modifiedVersionDict["timestamp"] = Kitemetrics.shared.timeIntervalSince1970()
             modifiedVersionDict["installType"] = installType.rawValue
             
             if let applicationId = KFUserDefaults.applicationId() {

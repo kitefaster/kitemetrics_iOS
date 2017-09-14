@@ -8,7 +8,7 @@
 
 import StoreKit
 import iAd
-
+import TrueTime
 
 ///Kitemetrics iOS Client SDK
 @objc
@@ -50,11 +50,14 @@ public class Kitemetrics: NSObject {
     let timerManager = KFTimerManager()
     var currentBackoffMultiplier = 1
     var currentBackoffValue = 1
+    fileprivate var referenceTime: ReferenceTime?
     
     private override init() {
         super.init()
         KFLog.p("Kitemetrics shared instance initialized!")
         sessionManager.delegate = self
+        TrueTimeClient.sharedInstance.start()
+        refreshTime()
     }
     
     public func initSession(apiKey: String) {
@@ -84,6 +87,25 @@ public class Kitemetrics: NSObject {
         }
         
         appLaunch()
+    }
+    
+    func refreshTime() {
+        TrueTimeClient.sharedInstance.fetchIfNeeded { result in
+            switch result {
+            case let .success(referenceTime):
+                self.referenceTime = referenceTime
+            case let .failure(error):
+                KFError.logError(error)
+            }
+        }
+    }
+    
+    func timeIntervalSince1970() -> TimeInterval {
+        guard let rt = self.referenceTime else {
+            return Date().timeIntervalSince1970
+        }
+        let trueTime = rt.now()
+        return trueTime.timeIntervalSince1970
     }
     
     func isEmailAddress(inputString: String) -> Bool {
@@ -123,14 +145,16 @@ public class Kitemetrics: NSObject {
         self.queue.startSending()
         self.timerManager.performForegroundActions()
         
-        if KFUserDefaults.needsSearchAdsAttribution() {
-            //Click Latency
-            //Most users that click on a Search Ads impression immediately download the app. When the app is opened immediately and the
-            //Search Ads Attribution API is called, the corresponding ad click might not have been processed by our system yet due to some
-            //latency. We recommend setting a delay of a few seconds before retrieving attribution data.
-            //Source: https://searchads.apple.com/help/pdf/attribution-api.pdf
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                self.postSearchAdsAttribution()
+        if #available(iOS 10, *) {
+            if KFUserDefaults.needsSearchAdsAttribution() {
+                //Click Latency
+                //Most users that click on a Search Ads impression immediately download the app. When the app is opened immediately and the
+                //Search Ads Attribution API is called, the corresponding ad click might not have been processed by our system yet due to some
+                //latency. We recommend setting a delay of a few seconds before retrieving attribution data.
+                //Source: https://searchads.apple.com/help/pdf/attribution-api.pdf
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    self.postSearchAdsAttribution()
+                }
             }
         }
     }
@@ -155,7 +179,7 @@ public class Kitemetrics: NSObject {
     
     func postVersion(_ versionDict: [String: Any], installType: KFInstallType) {
         var modifiedVersionDict = versionDict
-        modifiedVersionDict["timestamp"] = Date().timeIntervalSince1970
+        modifiedVersionDict["timestamp"] = Kitemetrics.shared.timeIntervalSince1970()
         modifiedVersionDict["installType"] = installType.rawValue
         
         if let applicationId = KFUserDefaults.applicationId() {
@@ -321,32 +345,31 @@ public class Kitemetrics: NSObject {
         self.queue.addItem(item: request)
     }
     
+    @available(iOS 10, *)
     func postSearchAdsAttribution() {
-        if #available(iOS 10.0, *) {
-            ADClient.shared().requestAttributionDetails({ (attributionDetails: [AnyHashable : Any]?, error: Error?) in
-                if error != nil {
-                    let adClientError = error as! ADClientError
-                    if adClientError.code == ADClientError.unknown {
-                        //Apple Search Ads server is down.  Retry in 15 minutes.
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 900.0) {
-                            self.postSearchAdsAttribution()
-                        }
-                    } else if adClientError.code == ADClientError.limitAdTracking {
-                        KFUserDefaults.setNeedsSearchAdsAttribution(false)
-                    } else {
-                        KFError.logError(error!)
+        ADClient.shared().requestAttributionDetails({ (attributionDetails: [AnyHashable : Any]?, error: Error?) in
+            if error != nil {
+                let adClientError = error as! ADClientError
+                if adClientError.code == ADClientError.unknown {
+                    //Apple Search Ads server is down.  Retry in 15 minutes.
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 900.0) {
+                        self.postSearchAdsAttribution()
                     }
-                } else if attributionDetails != nil {
-                    guard let jsonData = KFHelper.jsonFromDictionary(attributionDetails!) else {
-                        return
-                    }
-                    self.postAttribution(jsonData)
+                } else if adClientError.code == ADClientError.limitAdTracking {
                     KFUserDefaults.setNeedsSearchAdsAttribution(false)
                 } else {
-                    KFError.logErrorMessage("nil attribuiton and nil error.")
+                    KFError.logError(error!)
                 }
-            })
-        }
+            } else if attributionDetails != nil {
+                guard let jsonData = KFHelper.jsonFromDictionary(attributionDetails!) else {
+                    return
+                }
+                self.postAttribution(jsonData)
+                KFUserDefaults.setNeedsSearchAdsAttribution(false)
+            } else {
+                KFError.logErrorMessage("nil attribuiton and nil error.")
+            }
+        })
     }
 
     

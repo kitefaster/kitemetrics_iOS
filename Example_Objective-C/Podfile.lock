@@ -1,5 +1,9 @@
 PODS:
-  - Kitemetrics (1.0.3)
+  - Kitemetrics (1.0.6):
+    - TrueTime
+  - Result (3.2.3)
+  - TrueTime (4.1.1):
+    - Result (~> 3.0)
 
 DEPENDENCIES:
   - Kitemetrics (from `../`)
@@ -9,7 +13,9 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  Kitemetrics: 8bc410fa99caea855913ae98d8847627dae1190e
+  Kitemetrics: 8bb52715af7b56c5913f6fd536ebafc485a558d5
+  Result: 128640a6347e8d2ae48b142556739a2d13f90ce6
+  TrueTime: 22bd3a6c9e9ce75e62e2c1a6b39d7cf290f7b78f
 
 PODFILE CHECKSUM: 491f9aaa9466c1a3938264aaecb5b23c3ec94665
 
