@@ -56,8 +56,11 @@ public class Kitemetrics: NSObject {
         super.init()
         KFLog.p("Kitemetrics shared instance initialized!")
         sessionManager.delegate = self
-        TrueTimeClient.sharedInstance.start()
-        refreshTime()
+        
+        if KFUtil.is64bit() {
+            TrueTimeClient.sharedInstance.start()
+            refreshTime()
+        }
     }
     
     public func initSession(apiKey: String) {
@@ -322,6 +325,16 @@ public class Kitemetrics: NSObject {
     public func logAddToCart(_ product: SKProduct, quantity: Int, purchaseType: KFPurchaseType? = .appleInAppUnknown) {
         var request = URLRequest(url: URL(string: Kitemetrics.kPurchasesEndpoint)!)
         guard let json = KFHelper.purchaseJson(product, quantity: quantity, funnel: KFPurchaseFunnel.addToCart, purchaseType: purchaseType) else {
+            return
+        }
+        request.httpBody = json
+        
+        self.queue.addItem(item: request)
+    }
+    
+    public func logPromotedInAppPurchase(_ product: SKProduct, quantity: Int, purchaseType: KFPurchaseType? = .appleInAppUnknown) {
+        var request = URLRequest(url: URL(string: Kitemetrics.kPurchasesEndpoint)!)
+        guard let json = KFHelper.purchaseJson(product, quantity: quantity, funnel: KFPurchaseFunnel.promotedInAppPurchase, purchaseType: purchaseType) else {
             return
         }
         request.httpBody = json

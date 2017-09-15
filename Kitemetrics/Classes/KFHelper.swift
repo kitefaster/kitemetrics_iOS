@@ -13,6 +13,7 @@ enum KFPurchaseFunnel: Int {
     case view = 1
     case addToCart = 2
     case purchase = 3
+    case promotedInAppPurchase = 4
 }
 
 enum KFInstallType: Int {

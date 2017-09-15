@@ -5,6 +5,6 @@ target 'KitemetricsObjC' do
   
   
   # Pods for KitemetricsObjC
-  pod 'Kitemetrics', :path => ‘../‘
+  pod 'Kitemetrics', :path => '../'
 
 end
