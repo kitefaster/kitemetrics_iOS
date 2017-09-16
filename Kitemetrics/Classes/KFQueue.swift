@@ -29,7 +29,8 @@ class KFQueue {
     
     static let kMaxQueueSize = 30
     static let kTimeToWaitBeforeSendingMessagesWithErrors = 43200.0 // 12 hours
-    static let kMaxErrorFilesToSave = 1000
+    static let kMaxQueueFilesToSave = 1000
+    static let kMaxErrorFilesToSave = 500
     
     init() {
         NotificationCenter.default.addObserver(self, selector: #selector(didReceivePostSuccess), name: NSNotification.Name(rawValue: "com.kitefaster.KFRequest.Post.Success"), object: nil)
@@ -69,6 +70,9 @@ class KFQueue {
                 } catch let error {
                     KFError.logError(error)
                 }
+                
+                //If over file limit, remove older files
+                self.removeOldFiles(directory: queueDirectory(), maxFilesToKeep: KFQueue.kMaxQueueFilesToSave)
             }
         }
         
@@ -85,6 +89,36 @@ class KFQueue {
         }
     }
     
+    func removeOldFiles(directory: URL, maxFilesToKeep: Int) {
+        let fileManager = FileManager.default
+        do {
+            var contents: [URL]? = nil
+            contents = try fileManager.contentsOfDirectory(at: directory, includingPropertiesForKeys: [], options: FileManager.DirectoryEnumerationOptions.skipsHiddenFiles)
+            
+            //if we have too many files, delete the oldest files
+            if contents != nil && contents!.count > maxFilesToKeep {
+                let orderedContents = contents!.sorted {a,b in
+                    let atime = KFQueue.timeIntervalFromFilename(a.lastPathComponent)
+                    let btime = KFQueue.timeIntervalFromFilename(b.lastPathComponent)
+                    return atime < btime
+                }
+                contents = nil
+                
+                let overage = orderedContents.count - maxFilesToKeep
+                for i in 0...overage - 1 {
+                    let url = orderedContents[i]
+                    do {
+                        try FileManager.default.removeItem(at: url)
+                    } catch let error {
+                        KFError.logError(error)
+                    }
+                }
+            }
+        } catch let error {
+            KFError.logError(error)
+        }
+    }
+    
     func saveRequestToError(_ request: URLRequest) {
         KFLog.p("KFQueue saveRequestToError")
         self.errorMutex.sync {
@@ -98,6 +132,9 @@ class KFQueue {
             } catch let error {
                 KFError.logError(error)
             }
+            
+            //If over file limit, remove older files
+            self.removeOldFiles(directory: queueErrorsDirectory(), maxFilesToKeep: KFQueue.kMaxErrorFilesToSave)
         }
     }
     
@@ -109,16 +146,16 @@ class KFQueue {
             try self.mutex.sync {
                 contents = try fileManager.contentsOfDirectory(at: queueDirectory(), includingPropertiesForKeys: [], options: FileManager.DirectoryEnumerationOptions.skipsHiddenFiles)
                 self.newFilesToLoad = false
-            }
-            if contents != nil && contents!.count > 0 {
-                self.filesToSend = contents!.sorted {a,b in
-                    let atime = KFQueue.timeIntervalFromFilename(a.lastPathComponent)
-                    let btime = KFQueue.timeIntervalFromFilename(b.lastPathComponent)
-                    return atime < btime
+                
+                if contents != nil && contents!.count > 0 {
+                    self.filesToSend = contents!.sorted {a,b in
+                        let atime = KFQueue.timeIntervalFromFilename(a.lastPathComponent)
+                        let btime = KFQueue.timeIntervalFromFilename(b.lastPathComponent)
+                        return atime < btime
+                    }
                 }
-
             }
-            } catch let error {
+        } catch let error {
             KFError.logError(error)
         }
     }
@@ -130,27 +167,12 @@ class KFQueue {
             var contents: [URL]? = nil
             try self.errorMutex.sync {
                 contents = try fileManager.contentsOfDirectory(at: queueErrorsDirectory(), includingPropertiesForKeys: [], options: FileManager.DirectoryEnumerationOptions.skipsHiddenFiles)
-            }
-            if contents != nil && contents!.count > 0 {
-                self.errorFilesToSend = contents!.sorted {a,b in
-                    let atime = KFQueue.timeIntervalFromFilename(a.lastPathComponent)
-                    let btime = KFQueue.timeIntervalFromFilename(b.lastPathComponent)
-                    return atime < btime
-                }
-                contents = nil
-                //if we have too many error files, delete the oldest files
-                if self.errorFilesToSend!.count > KFQueue.kMaxErrorFilesToSave {
-                    let overage = KFQueue.kMaxErrorFilesToSave - self.errorFilesToSend!.count
-                    for _ in 0...overage {
-                        let url = self.errorFilesToSend!.first
-                        if url != nil {
-                            do {
-                                try FileManager.default.removeItem(at: url!)
-                            } catch let error {
-                                KFError.logError(error)
-                            }
-                        }
-                        self.errorFilesToSend!.removeFirst()
+            
+                if contents != nil && contents!.count > 0 {
+                    self.errorFilesToSend = contents!.sorted {a,b in
+                        let atime = KFQueue.timeIntervalFromFilename(a.lastPathComponent)
+                        let btime = KFQueue.timeIntervalFromFilename(b.lastPathComponent)
+                        return atime < btime
                     }
                 }
             }

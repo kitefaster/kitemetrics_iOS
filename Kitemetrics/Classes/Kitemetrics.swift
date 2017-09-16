@@ -8,7 +8,6 @@
 
 import StoreKit
 import iAd
-import TrueTime
 
 ///Kitemetrics iOS Client SDK
 @objc
@@ -50,17 +49,11 @@ public class Kitemetrics: NSObject {
     let timerManager = KFTimerManager()
     var currentBackoffMultiplier = 1
     var currentBackoffValue = 1
-    fileprivate var referenceTime: ReferenceTime?
     
     private override init() {
         super.init()
         KFLog.p("Kitemetrics shared instance initialized!")
         sessionManager.delegate = self
-        
-        if KFUtil.is64bit() {
-            TrueTimeClient.sharedInstance.start()
-            refreshTime()
-        }
     }
     
     public func initSession(apiKey: String) {
@@ -91,26 +84,7 @@ public class Kitemetrics: NSObject {
         
         appLaunch()
     }
-    
-    func refreshTime() {
-        TrueTimeClient.sharedInstance.fetchIfNeeded { result in
-            switch result {
-            case let .success(referenceTime):
-                self.referenceTime = referenceTime
-            case let .failure(error):
-                KFError.logError(error)
-            }
-        }
-    }
-    
-    func timeIntervalSince1970() -> TimeInterval {
-        guard let rt = self.referenceTime else {
-            return Date().timeIntervalSince1970
-        }
-        let trueTime = rt.now()
-        return trueTime.timeIntervalSince1970
-    }
-    
+
     func isEmailAddress(inputString: String) -> Bool {
         let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
         
@@ -182,7 +156,7 @@ public class Kitemetrics: NSObject {
     
     func postVersion(_ versionDict: [String: Any], installType: KFInstallType) {
         var modifiedVersionDict = versionDict
-        modifiedVersionDict["timestamp"] = Kitemetrics.shared.timeIntervalSince1970()
+        modifiedVersionDict["timestamp"] = Date().timeIntervalSince1970
         modifiedVersionDict["installType"] = installType.rawValue
         
         if let applicationId = KFUserDefaults.applicationId() {
@@ -392,7 +366,6 @@ public class Kitemetrics: NSObject {
         
         self.queue.addItem(item: request)
     }
-    
     
 }
 

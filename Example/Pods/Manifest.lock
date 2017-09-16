@@ -1,10 +1,6 @@
 PODS:
-  - Kitemetrics (1.0.7):
-    - TrueTime
-  - Result (3.2.3)
+  - Kitemetrics (1.0.8)
   - SnapKit (3.2.0)
-  - TrueTime (4.1.1):
-    - Result (~> 3.0)
 
 DEPENDENCIES:
   - Kitemetrics (from `../`)
@@ -15,10 +11,8 @@ EXTERNAL SOURCES:
     :path: ../
 
 SPEC CHECKSUMS:
-  Kitemetrics: cf6123e0068841b6146d32fd0cce4affb04d43ac
-  Result: 128640a6347e8d2ae48b142556739a2d13f90ce6
+  Kitemetrics: b6d42608e49b34025edc8e5a8f2da9aa0836e718
   SnapKit: 1ca44df72cfa543218d177cb8aab029d10d86ea7
-  TrueTime: 22bd3a6c9e9ce75e62e2c1a6b39d7cf290f7b78f
 
 PODFILE CHECKSUM: cf958c517f0bcb3346dd1f6c469cce90794ab407
 

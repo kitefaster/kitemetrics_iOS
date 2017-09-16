@@ -1,4 +1,0 @@
-module CTrueTime [system] {
-  header "ntp_types.h"
-  export *
-}

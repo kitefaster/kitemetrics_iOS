@@ -87,7 +87,7 @@ class KFHelper {
     
     class func eventDict(_ event: String) -> [String: Any] {
         var dict = [String: Any]()
-        dict["timestamp"] = Kitemetrics.shared.timeIntervalSince1970()
+        dict["timestamp"] = Date().timeIntervalSince1970
         dict["event"] = event.truncate(255)
         
         if let versionId = KFUserDefaults.versionId() {
@@ -100,7 +100,7 @@ class KFHelper {
     
     class func eventSignUpDict(method: String, userIdentifier: String) -> [String: Any] {
         var dict = [String: Any]()
-        dict["timestamp"] = Kitemetrics.shared.timeIntervalSince1970()
+        dict["timestamp"] = Date().timeIntervalSince1970
         dict["method"] = method.truncate(255)
         dict["userIdentifier"] = userIdentifier.truncate(255)
         
@@ -114,7 +114,7 @@ class KFHelper {
     
     class func eventInviteDict(method: String, code: String?) -> [String: Any] {
         var dict = [String: Any]()
-        dict["timestamp"] = Kitemetrics.shared.timeIntervalSince1970()
+        dict["timestamp"] = Date().timeIntervalSince1970
         dict["method"] = method.truncate(255)
         if code != nil {
             dict["code"] = code!.truncate(255)
@@ -130,7 +130,7 @@ class KFHelper {
     
     class func eventRedeemInviteDict(code: String) -> [String: Any] {
         var dict = [String: Any]()
-        dict["timestamp"] = Kitemetrics.shared.timeIntervalSince1970()
+        dict["timestamp"] = Date().timeIntervalSince1970
         dict["code"] = code.truncate(255)
         
         if let versionId = KFUserDefaults.versionId() {
@@ -143,7 +143,7 @@ class KFHelper {
     
     class func errorDict(_ error: String, isInternal: Bool) -> [String: Any] {
         var dict = [String: Any]()
-        dict["timestamp"] = Kitemetrics.shared.timeIntervalSince1970()
+        dict["timestamp"] = Date().timeIntervalSince1970
         dict["error"] = error.truncate(1000)
         dict["isInternal"] = isInternal
         
@@ -157,7 +157,7 @@ class KFHelper {
     
     class func purchaseDict(_ product: SKProduct, quantity: Int, funnel: KFPurchaseFunnel, purchaseType: KFPurchaseType?) -> [String: Any] {
         var dict = [String: Any]()
-        dict["timestamp"] = Kitemetrics.shared.timeIntervalSince1970()
+        dict["timestamp"] = Date().timeIntervalSince1970
         dict["price"] = product.price.floatValue
         dict["currencyCode"] = product.priceLocale.currencyCode
         dict["productIdentifier"] = product.productIdentifier

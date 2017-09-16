@@ -62,17 +62,27 @@ class KFRequest {
         }
         
         URLSession.shared.dataTask(with: request) {data, response, err in
+            Kitemetrics.shared.currentBackoffValue = 1
             var userInfo : [String : Any]
             if filename == nil {
                 userInfo = ["request" : request]
             } else {
-                 userInfo = ["filename": filename!, "request" : request]
+                userInfo = ["filename": filename!, "request" : request]
             }
             
             if err != nil {
-                KFError.logErrorMessage("Error sending request. " + err!.localizedDescription, sendToServer: sendToServer)
-                if !isImmediate {
-                    NotificationCenter.default.post(name: Notification.Name(rawValue: "com.kitefaster.KFRequest.Post.Error"), object: nil, userInfo: userInfo)
+                let error: NSError = err! as NSError
+                if (error.domain == NSURLErrorDomain || error.domain == kCFErrorDomainCFNetwork as String) && (error.code == -1001 || error.code == -1004){
+                    //server down, increase timeout
+                    Kitemetrics.shared.currentBackoffMultiplier = Kitemetrics.shared.currentBackoffMultiplier + 1
+                    KFLog.p("Timeout.  Set backoff to " + String(Kitemetrics.shared.currentBackoffMultiplier))
+                    //Do not send notification.  Will attempt to resend again.
+                } else {
+                    KFLog.p("Debug err: " + err.debugDescription)
+                    KFError.logErrorMessage("Error sending request. " + err!.localizedDescription, sendToServer: sendToServer)
+                    if !isImmediate {
+                        NotificationCenter.default.post(name: Notification.Name(rawValue: "com.kitefaster.KFRequest.Post.Error"), object: nil, userInfo: userInfo)
+                    }
                 }
                 return
             }
@@ -85,7 +95,6 @@ class KFRequest {
             }
             
             let statusCode = httpResponse.statusCode
-            Kitemetrics.shared.currentBackoffValue = 1
             
             if (statusCode == 200) {
                 do{
@@ -127,7 +136,7 @@ class KFRequest {
                 if statusCode == 502 || statusCode == 404 {
                     //server down, increase timeout
                     Kitemetrics.shared.currentBackoffMultiplier = Kitemetrics.shared.currentBackoffMultiplier + 1
-                    KFLog.p("set backoff to " + String(Kitemetrics.shared.currentBackoffMultiplier))
+                    KFLog.p("Timeout. Set backoff to " + String(Kitemetrics.shared.currentBackoffMultiplier))
                     //Do not send notification.  Will attempt to resend again.
                 } else if KFLog.debug {
                     do {
@@ -202,7 +211,7 @@ class KFRequest {
             
             
             var modifiedVersionDict: [String: Any] = currentVersion
-            modifiedVersionDict["timestamp"] = Kitemetrics.shared.timeIntervalSince1970()
+            modifiedVersionDict["timestamp"] = Date().timeIntervalSince1970
             modifiedVersionDict["installType"] = installType.rawValue
             
             if let applicationId = KFUserDefaults.applicationId() {
