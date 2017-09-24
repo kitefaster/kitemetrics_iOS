@@ -73,5 +73,32 @@ class KFUserDefaults {
     class func needsSearchAdsAttribution() -> Bool {
         return UserDefaults.standard.bool(forKey: "com.kitemetrics.needsSearchAdsAttribution")
     }
+    
+    class func setInstallDate(date: Date) {
+        UserDefaults.standard.set(date, forKey: "com.kitemetrics.installDate")
+    }
+    
+    class func installDate() -> Date {
+        let value = UserDefaults.standard.value(forKey: "com.kitemetrics.installDate")
+        if value != nil {
+            return value! as! Date
+        } else {
+            //Install date not yet set.  Set it now.
+            let today = Date()
+            setInstallDate(date: today)
+            return today
+        }
+    }
+    
+    class func incrementAttributionRequestAttemptNumber() -> Int {
+        var attemptNumber = attributionRequestAttemptNumber()
+        attemptNumber = attemptNumber + 1
+        UserDefaults.standard.setValue(attemptNumber, forKey: "com.kitemetrics.attributionRequestAttemptNumber")
+        return attemptNumber
+    }
+    
+    class func attributionRequestAttemptNumber() -> Int {
+        return UserDefaults.standard.integer(forKey: "com.kitemetrics.attributionRequestAttemptNumber")
+    }
 
 }
