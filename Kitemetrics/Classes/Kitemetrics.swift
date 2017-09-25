@@ -350,7 +350,7 @@ public class Kitemetrics: NSObject {
             if error != nil {
                 let adClientError = error as! ADClientError
                 if adClientError.code == ADClientError.unknown {
-                    //Apple Search Ads server is down.  Retry in a few seconds.
+                    //Apple Search Ads unknown error.  Retry in a few seconds.
                     DispatchQueue.main.asyncAfter(deadline: .now() + 3.0 + TimeInterval(attemptNumber)) {
                         self.postSearchAdsAttribution()
                     }
@@ -367,9 +367,15 @@ public class Kitemetrics: NSObject {
             
                     if (a["iad-campaign-name"] == nil || a["iad-campaign-name"] as! String == "") && (a["iad-org-name"] == nil || a["iad-org-name"] as! String == "") && (a["iad-keyword"] == nil || a["iad-keyword"] as! String == "") {
                         //Empty.  Try again in a few seconds.
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0 + TimeInterval(attemptNumber)) {
-                            self.postSearchAdsAttribution()
+                        if attemptNumber < 10 {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0 + TimeInterval(attemptNumber)) {
+                                self.postSearchAdsAttribution()
+                            }
+                        } else {
+                            //Cap retries for click latency
+                            KFUserDefaults.setNeedsSearchAdsAttribution(false)
                         }
+
                         return
                     }
                 }
