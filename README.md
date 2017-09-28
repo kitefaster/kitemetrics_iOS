@@ -19,7 +19,7 @@ The Kitemetrics iOS Client SDK automatically logs Apple Search Ads keyword attri
 
 ## Requirements
 
-- iOS 8.0+  (iOS 7.0+ with manual install)
+- iOS 8.0+
 - Xcode 8.0+
 - Objective-C or Swift 3.0+
 
@@ -54,7 +54,7 @@ $ pod install
 
 ### Manually
 
-If you want to support iOS 7 or prefer not to use the CocoaPods dependency manager, you can integrate Kitemetrics into your project manually by copy/pasting the files into your project or by adding as a git submodule.
+If you do not want to use the CocoaPods dependency manager, you can integrate Kitemetrics into your project manually by copy/pasting the files into your project or by adding as a git submodule.
 
 ## Usage
 
