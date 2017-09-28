@@ -21,10 +21,11 @@
     //If userIdentifier is known on startup, you can set it here
 //    [[Kitemetrics shared] initSessionWithApiKey:@"API_KEY" userIdentifier:@"012345abc"];
     
-//    [[Kitemetrics shared] logAddToCart:skProduct quantity:1];
-//    [[Kitemetrics shared] logInAppPurchase:skProduct quantity:1];
-    //If the IAP type is know you can set it with KFPurchaseTypeAppleInAppNonConsumable or KFPurchaseTypeAppleInAppConsumable, etc.
-//    [[Kitemetrics shared] logInAppPurchase:skProduct quantity:1 purchaseType:KFPurchaseTypeAppleInAppNonConsumable];
+//    Log in app purchase events with logInAppPurchase after the purchase has been verified.  If the IAP type is known set it with KFPurchaseTypeAppleInAppNonConsumable, KFPurchaseTypeAppleInAppConsumable, KFPurchaseTypeAppleInAppRenewableSubscription, or KFPurchaseTypeAppleInAppNonRenewingSubscription.
+//    [[Kitemetrics shared] logInAppPurchase:skProduct quantity:1 purchaseType:KFPurchaseType];
+//  If the SKProduct is unavailble or this is an eCommerce transaction you can pass the productIdentifier, price and currency code manually
+    NSDecimal price = [[[NSDecimalNumber alloc] initWithFloat:0.99f] decimalValue];
+    [[Kitemetrics shared] logPurchaseWithProductIdentifier:@"com.kitefaster.demo.KitemetricsObjC.TestPurchase1" price:price currencyCode:@"USD" quantity:1 purchaseType:KFPurchaseTypeAppleInAppConsumable];
     
     [[Kitemetrics shared] logError:@"Test Error"];
     [[Kitemetrics shared] logEvent:@"Test Event"];

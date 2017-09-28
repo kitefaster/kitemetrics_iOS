@@ -305,9 +305,9 @@ public class Kitemetrics: NSObject {
     }
     
     ///Log when a user adds an in-app item to their cart
-    public func logAddToCart(_ product: SKProduct, quantity: Int, purchaseType: KFPurchaseType? = .appleInAppUnknown) {
+    public func logInAppAddToCart(_ product: SKProduct, quantity: Int, purchaseType: KFPurchaseType? = .unknown) {
         var request = URLRequest(url: URL(string: Kitemetrics.kPurchasesEndpoint)!)
-        guard let json = KFHelper.purchaseJson(product, quantity: quantity, funnel: KFPurchaseFunnel.addToCart, purchaseType: purchaseType) else {
+        guard let json = KFHelper.inAppPurchaseJson(product, quantity: quantity, funnel: KFPurchaseFunnel.addToCart, purchaseType: purchaseType) else {
             return
         }
         request.httpBody = json
@@ -315,26 +315,37 @@ public class Kitemetrics: NSObject {
         self.queue.addItem(item: request)
     }
     
-    //Do not use.  Causes crash on iOS 11 due to nil currency locale.  Radar submitted.
-//    public func logPromotedInAppPurchase(_ product: SKProduct, quantity: Int, purchaseType: KFPurchaseType? = .appleInAppUnknown) {
-//        var request = URLRequest(url: URL(string: Kitemetrics.kPurchasesEndpoint)!)
-//        guard let json = KFHelper.purchaseJson(product, quantity: quantity, funnel: KFPurchaseFunnel.promotedInAppPurchase, purchaseType: purchaseType) else {
-//            return
-//        }
-//        request.httpBody = json
-//
-//        self.queue.addItem(item: request)
-//    }
+    ///Log when a user adds an item to their cart
+    public func logAddToCart(productIdentifier: String, price: Decimal, currencyCode: String, quantity: Int, purchaseType: KFPurchaseType) {
+        var request = URLRequest(url: URL(string: Kitemetrics.kPurchasesEndpoint)!)
+        guard let json = KFHelper.purchaseJson(productIdentifier: productIdentifier, price: price, currencyCode: currencyCode, quantity: quantity, funnel: KFPurchaseFunnel.addToCart, purchaseType: purchaseType) else {
+            return
+        }
+        request.httpBody = json
+        
+        self.queue.addItem(item: request)
+    }
     
     ///Log when a user completes an in-app purchase
     public func logInAppPurchase(_ product: SKProduct, quantity: Int) {
-        logInAppPurchase(product, quantity:quantity, purchaseType: KFPurchaseType.appleInAppUnknown)
+        logInAppPurchase(product, quantity:quantity, purchaseType: KFPurchaseType.unknown)
     }
     
     ///Log when a user completes an in-app purchase
     public func logInAppPurchase(_ product: SKProduct, quantity: Int, purchaseType: KFPurchaseType) {
         var request = URLRequest(url: URL(string: Kitemetrics.kPurchasesEndpoint)!)
-        guard let json = KFHelper.purchaseJson(product, quantity: quantity, funnel: KFPurchaseFunnel.purchase, purchaseType: purchaseType) else {
+        guard let json = KFHelper.inAppPurchaseJson(product, quantity: quantity, funnel: KFPurchaseFunnel.purchase, purchaseType: purchaseType) else {
+            return
+        }
+        request.httpBody = json
+        
+        self.queue.addItem(item: request)
+    }
+    
+    ///Log when a user completes a purchase
+    public func logPurchase(productIdentifier: String, price: Decimal, currencyCode: String, quantity: Int, purchaseType: KFPurchaseType) {
+        var request = URLRequest(url: URL(string: Kitemetrics.kPurchasesEndpoint)!)
+        guard let json = KFHelper.purchaseJson(productIdentifier: productIdentifier, price: price, currencyCode: currencyCode, quantity: quantity, funnel: KFPurchaseFunnel.purchase, purchaseType: purchaseType) else {
             return
         }
         request.httpBody = json
@@ -345,8 +356,9 @@ public class Kitemetrics: NSObject {
     @available(iOS 10, *)
     func postSearchAdsAttribution() {
         let attemptNumber = KFUserDefaults.incrementAttributionRequestAttemptNumber()
-        
+        KFLog.p("Requesting attribution details attempt # " + String(attemptNumber))
         ADClient.shared().requestAttributionDetails({ (attributionDetails: [AnyHashable : Any]?, error: Error?) in
+            KFLog.p("Requesting attribution details responded.")
             if error != nil {
                 let adClientError = error as! ADClientError
                 if adClientError.code == ADClientError.unknown {
@@ -356,6 +368,7 @@ public class Kitemetrics: NSObject {
                     }
                     KFError.logError(error!)
                 } else if adClientError.code == ADClientError.limitAdTracking {
+                    KFLog.p("Limit ad tracking is turned on.")
                     KFUserDefaults.setNeedsSearchAdsAttribution(false)
                 } else {
                     KFError.logError(error!)

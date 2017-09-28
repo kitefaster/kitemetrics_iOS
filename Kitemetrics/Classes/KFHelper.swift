@@ -27,12 +27,13 @@ enum KFInstallType: Int {
 
 @objc
 public enum KFPurchaseType: Int {
-    case appleInAppUnknown = 1
+    case unknown = 1
     case appleInAppConsumable = 2
     case appleInAppNonConsumable = 3
     case appleInAppAutoRenewableSubscription = 4
     case appleInAppNonRenewingSubscription = 5
     case applePaidApp = 6
+    case eCommerce = 7
 }
 
 class KFHelper {
@@ -155,21 +156,33 @@ class KFHelper {
         return dict
     }
     
-    class func purchaseDict(_ product: SKProduct, quantity: Int, funnel: KFPurchaseFunnel, purchaseType: KFPurchaseType?) -> [String: Any] {
+    class func inAppPurchaseDict(_ product: SKProduct, quantity: Int, funnel: KFPurchaseFunnel, purchaseType: KFPurchaseType?) -> [String: Any] {
+        let pType: KFPurchaseType
+        if product.isDownloadable == true {
+            pType = KFPurchaseType.appleInAppNonConsumable
+        } else if purchaseType == nil {
+            pType = KFPurchaseType.unknown
+        } else {
+            pType = purchaseType!
+        }
+        
+        var currencyCode = ""
+        if product.priceLocale.currencyCode != nil {
+            currencyCode = product.priceLocale.currencyCode!
+        }
+        
+        return KFHelper.purchaseDict(productIdentifier: product.productIdentifier, price: product.price.decimalValue, currencyCode: currencyCode, quantity: quantity, funnel: funnel, purchaseType: pType)
+    }
+    
+    class func purchaseDict(productIdentifier: String, price: Decimal, currencyCode: String, quantity: Int, funnel: KFPurchaseFunnel, purchaseType: KFPurchaseType) -> [String: Any] {
         var dict = [String: Any]()
         dict["timestamp"] = Date().timeIntervalSince1970
-        dict["price"] = product.price.floatValue
-        dict["currencyCode"] = product.priceLocale.currencyCode
-        dict["productIdentifier"] = product.productIdentifier
+        dict["price"] = price
+        dict["currencyCode"] = currencyCode
+        dict["productIdentifier"] = productIdentifier
         dict["quantity"] = quantity
         dict["funnel"] = funnel.rawValue
-        if product.isDownloadable == true {
-            dict["purchaseTypeValue"] = KFPurchaseType.appleInAppNonConsumable.rawValue
-        } else if purchaseType == nil {
-            dict["purchaseTypeValue"] = KFPurchaseType.appleInAppUnknown.rawValue
-        } else {
-             dict["purchaseTypeValue"] = purchaseType?.rawValue
-        }
+        dict["purchaseTypeValue"] = purchaseType.rawValue
         
         if let versionId = KFUserDefaults.versionId() {
             if versionId > 0 {
@@ -211,8 +224,12 @@ class KFHelper {
         return jsonFromDictionary(errorDict(error, isInternal: isInternal), logErrors: false)
     }
     
-    class func purchaseJson(_ product: SKProduct, quantity: Int, funnel: KFPurchaseFunnel, purchaseType: KFPurchaseType?)-> Data? {
-        return jsonFromDictionary(purchaseDict(product, quantity: quantity, funnel: funnel, purchaseType: purchaseType))
+    class func inAppPurchaseJson(_ product: SKProduct, quantity: Int, funnel: KFPurchaseFunnel, purchaseType: KFPurchaseType?)-> Data? {
+        return jsonFromDictionary(inAppPurchaseDict(product, quantity: quantity, funnel: funnel, purchaseType: purchaseType))
+    }
+    
+    class func purchaseJson(productIdentifier: String, price: Decimal, currencyCode: String, quantity: Int, funnel: KFPurchaseFunnel, purchaseType: KFPurchaseType)-> Data? {
+        return jsonFromDictionary(purchaseDict(productIdentifier: productIdentifier, price: price, currencyCode: currencyCode, quantity: quantity, funnel: funnel, purchaseType: purchaseType))
     }
     
     class func jsonFromDictionary(_ dictionary: [AnyHashable:Any], logErrors: Bool = true) -> Data? {
