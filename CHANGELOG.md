@@ -2,23 +2,25 @@
 
 To install or update the Kitemetrics iOS client see the [readme](https://github.com/kitefaster/kitemetrics_iOS/blob/master/README.md).
 
+## 1.1.0 (2017-09-28)
+
+##### Enhancements
+
+* Can now log purchases directly when SKProduct is not available or for eCommerce transactions.
+* Improve attribution retry due to click latency or server error with a max attempt limit and a 30 day window.
 
 ## 1.0.8 (2017-09-17)
 
 ##### Enhancements
 
 * Improve log rotation when offline.
-* Improve backoff when request timesout or the server throws an error.
+* Improve backoff when request times out or the server throws an error.
 
 ##### Bug Fixes
 
-* Remove TrueTime library due to memory leak.  Will revist including it after patch is pushed to trunk.
+* Remove TrueTime library due to memory leak.  Will revisit including it after patch is pushed to trunk.
 
 ## 1.0.7 (2017-09-15)
-
-##### Enhancements
-
-* None
 
 ##### Bug Fixes
 
@@ -38,11 +40,8 @@ To install or update the Kitemetrics iOS client see the [readme](https://github.
 
 ##### Enhancements
 
-* Remove unnecessary DispatchQueue.main.async calls. 
+* Remove unnecessary DispatchQueue.main.async calls.
 
-##### Bug Fixes
-
-* None.
 
 ## 1.0.4 (2017-08-02)
 
@@ -59,8 +58,4 @@ To install or update the Kitemetrics iOS client see the [readme](https://github.
 ##### Enhancements
 
 * Disable debug logging by default.
-* Update readme. 
-
-##### Bug Fixes
-
-* None.
+* Update readme.

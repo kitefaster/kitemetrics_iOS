@@ -1,5 +1,5 @@
 PODS:
-  - Kitemetrics (1.0.8)
+  - Kitemetrics (1.1.0)
 
 DEPENDENCIES:
   - Kitemetrics (from `../`)
@@ -9,7 +9,7 @@ EXTERNAL SOURCES:
     :path: ../
 
 SPEC CHECKSUMS:
-  Kitemetrics: b6d42608e49b34025edc8e5a8f2da9aa0836e718
+  Kitemetrics: 8ab7fb21080180c8f29c85cad01d79b3d46fb4e4
 
 PODFILE CHECKSUM: 1db22e936b8832690b0f78efcfb217cc53e9bbfe
 
