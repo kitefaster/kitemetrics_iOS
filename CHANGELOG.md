@@ -2,6 +2,8 @@
 
 To install or update the Kitemetrics iOS client see the [readme](https://github.com/kitefaster/kitemetrics_iOS/blob/master/README.md).
 
+# Changelog
+
 ## 1.1.0 (2017-09-28)
 
 ##### Enhancements
