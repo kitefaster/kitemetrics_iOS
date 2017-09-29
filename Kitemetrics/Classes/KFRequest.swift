@@ -61,8 +61,8 @@ class KFRequest {
             }
         }
         
-        let deviceTimestamp = String(Date().timeIntervalSince1970+3600.0)
-        request.setValue(deviceTimestamp, forHTTPHeaderField: "Device-Timestamp")
+        let deviceTimestamp = String(Date().timeIntervalSince1970)
+        request.setValue(deviceTimestamp, forHTTPHeaderField: "X-Device-Timestamp")
         
         URLSession.shared.dataTask(with: request) {data, response, err in
             Kitemetrics.shared.currentBackoffValue = 1
