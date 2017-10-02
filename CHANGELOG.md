@@ -4,6 +4,12 @@ To install or update the Kitemetrics iOS client see the [readme](https://github.
 
 # Changelog
 
+## 1.1.1 (2017-10-02)
+
+##### Enhancements
+
+* Improve time accuracy reporting when client device has inaccurate system time.
+
 ## 1.1.0 (2017-09-28)
 
 ##### Enhancements
