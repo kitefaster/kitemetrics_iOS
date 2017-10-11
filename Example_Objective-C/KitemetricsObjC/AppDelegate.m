@@ -7,6 +7,9 @@
 //
 
 #import "AppDelegate.h"
+
+//If you do not want to use modules for import you can use the below #import statement instead
+//#import <Kitemetrics/Kitemetrics-Swift.h>
 @import Kitemetrics;
 
 @interface AppDelegate ()
