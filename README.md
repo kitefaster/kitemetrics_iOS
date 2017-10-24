@@ -59,7 +59,7 @@ If you do not want to use the CocoaPods dependency manager, you can integrate Ki
 ## Usage
 
 #### Initialize the session in AppDelegate
-##### Swift 3.0
+##### Swift 4.0
 ```swift
 import Kitemetrics
 
@@ -88,17 +88,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 ```
 
-#### Log purchase and Sign Up Events
-##### Swift 3.0
+#### Log Purchase Events
+##### Swift 4.0
 ```swift
     Kitemetrics.shared.logInAppPurchase(skProduct, quantity: 1)
-    Kitemetrics.shared.logSignUp(method: "email", userIdentifier: "12345abc")
+    //It is recommended to include the purchaseType if known
+    Kitemetrics.shared.logInAppPurchase(skProduct, quantity: 1, purchaseType: KFPurchaseType.appleInAppNonConsumable)
+
+    //If the SKProduct is unavailable you can log a purchase directly as
+    Kitemetrics.shared.logPurchase(productIdentifier: "productId", price: Decimal(0.99), currencyCode: "USD", quantity: 1, purchaseType: .eCommerce)
 ```
 
 ##### Objective-C
 ```objective-c
     [[Kitemetrics shared] logInAppPurchase:skProduct quantity:1];
-    [[Kitemetrics shared] logSignUpWithMethod:@"email" userIdentifier:@"12345abc"];
+    //It is recommended to include the purchaseType if known
+    [[Kitemetrics shared] logInAppPurchase:skProduct quantity:1 purchaseType:KFPurchaseTypeAppleInAppNonConsumable];
+
+    //If the SKProduct is unavailable you can log a purchase directly as
+    NSDecimal price = [[[NSDecimalNumber alloc] initWithFloat:0.99f] decimalValue];
+    [[Kitemetrics shared] logPurchaseWithProductIdentifier:@"productId" price:price currencyCode:@"USD" quantity:1 purchaseType:KFPurchaseTypeECommerce];
 ```
 
 Full list of pre-defined and custom events are available at the full [documentation](http://kitemetrics.com/docs/?utm_source=github&utm_medium=readme&utm_campaign=cp).
