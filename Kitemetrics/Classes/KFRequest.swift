@@ -41,7 +41,8 @@ class KFRequest {
                     }
                 }
                 
-                if dictionary!["deviceId"] == nil, let deviceId = KFUserDefaults.deviceId() {
+                if dictionary!["deviceId"] == nil {
+                    let deviceId = KFUserDefaults.deviceId()
                     if deviceId > 0 {
                         dictionary!["deviceId"] = deviceId
                     } else {
@@ -225,12 +226,11 @@ class KFRequest {
                 }
             }
             
-            if let deviceId = KFUserDefaults.deviceId() {
-                if deviceId > 0 {
-                    modifiedVersionDict["deviceId"] = deviceId
-                } else {
-                    modifiedVersionDict["deviceIdForVendor"] = KFDevice.identifierForVendor()
-                }
+            let deviceId = KFUserDefaults.deviceId()
+            if deviceId > 0 {
+                modifiedVersionDict["deviceId"] = deviceId
+            } else {
+                modifiedVersionDict["deviceIdForVendor"] = KFDevice.identifierForVendor()
             }
 
             var request = URLRequest(url: URL(string: Kitemetrics.kVersionsEndpoint)!)

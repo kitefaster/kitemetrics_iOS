@@ -22,7 +22,7 @@ class KFUserDefaults {
         UserDefaults.standard.setValue(kitemetricsDeviceId, forKey: "com.kitemetrics.deviceId")
     }
     
-    class func deviceId() -> Int? {
+    class func deviceId() -> Int {
         return UserDefaults.standard.integer(forKey: "com.kitemetrics.deviceId")
     }
     

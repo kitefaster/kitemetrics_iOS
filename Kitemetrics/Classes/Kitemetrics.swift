@@ -176,12 +176,11 @@ public class Kitemetrics: NSObject {
             }
         }
 
-        if let deviceId = KFUserDefaults.deviceId() {
-            if deviceId > 0 {
-                modifiedVersionDict["deviceId"] = deviceId
-            } else {
-                modifiedVersionDict["deviceIdForVendor"] = KFDevice.identifierForVendor()
-            }
+        let deviceId = KFUserDefaults.deviceId()
+        if deviceId > 0 {
+            modifiedVersionDict["deviceId"] = deviceId
+        } else {
+            modifiedVersionDict["deviceIdForVendor"] = KFDevice.identifierForVendor()
         }
 
         var request = URLRequest(url: URL(string: Kitemetrics.kVersionsEndpoint)!)
@@ -412,6 +411,9 @@ public class Kitemetrics: NSObject {
         self.queue.addItem(item: request)
     }
     
+    public func kitemetricsDeviceId() -> Int {
+        return KFUserDefaults.deviceId()
+    }
 }
 
 extension Kitemetrics: KFSessionManagerDelegate {
