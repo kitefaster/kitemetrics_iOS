@@ -40,7 +40,7 @@ public enum KFReachabilityError: Error {
 public let KFReachabilityChangedNotification = NSNotification.Name("com.kitemetrics.KFReachabilityChangedNotification")
 
 extension Notification.Name {
-    public static let reachabilityChanged = Notification.Name("KFReachabilityChanged")
+    public static let kfReachabilityChanged = Notification.Name("KFReachabilityChanged")
 }
 
 func callback(reachability:SCNetworkReachability, flags: SCNetworkReachabilityFlags, info: UnsafeMutableRawPointer?) {
@@ -272,7 +272,7 @@ fileprivate extension KFReachability {
         
         DispatchQueue.main.async {
             block?(self)
-            self.notificationCenter.post(name: .reachabilityChanged, object:self)
+            self.notificationCenter.post(name: .kfReachabilityChanged, object:self)
         }
         
         previousFlags = flags
