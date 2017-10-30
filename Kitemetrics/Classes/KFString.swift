@@ -13,7 +13,8 @@ extension String {
     
     func truncate(_ length: Int) -> String {
         if self.characters.count > length {
-            let newString = self.substring(to: self.index(self.startIndex, offsetBy: length))
+            let index = self.index(self.startIndex, offsetBy: length)
+            let newString = String(self[...index])
             return newString
         }
         

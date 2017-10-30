@@ -39,13 +39,9 @@ public class KFDevice {
     }
     
     public class func advertisingIdentifier() -> String {
-        guard let identifierManager = ASIdentifierManager.shared() else {
-            return ""
-        }
+        let identifierManager = ASIdentifierManager.shared()
         if identifierManager.isAdvertisingTrackingEnabled {
-            guard let identifier = identifierManager.advertisingIdentifier else {
-                return ""
-            }
+            let identifier = identifierManager.advertisingIdentifier
             return identifier.uuidString
         }
         

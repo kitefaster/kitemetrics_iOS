@@ -356,7 +356,7 @@ public class Kitemetrics: NSObject {
     func postSearchAdsAttribution() {
         let attemptNumber = KFUserDefaults.incrementAttributionRequestAttemptNumber()
         KFLog.p("Requesting attribution details attempt # " + String(attemptNumber))
-        ADClient.shared().requestAttributionDetails({ (attributionDetails: [AnyHashable : Any]?, error: Error?) in
+        ADClient.shared().requestAttributionDetails({ (attributionDetails: [String : NSObject]?, error: Error?) in
             KFLog.p("Requesting attribution details responded.")
             if error != nil {
                 let adClientError = error as! ADClientError

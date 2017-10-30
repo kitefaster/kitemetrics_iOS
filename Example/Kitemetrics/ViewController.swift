@@ -118,34 +118,34 @@ class ViewController: UIViewController {
         
     }
     
-    func createEvent() {
+    @objc func createEvent() {
         Kitemetrics.shared.logEvent("Test Event")
     }
     
-    func createEventSignUp() {
+    @objc func createEventSignUp() {
         Kitemetrics.shared.logSignUp(method: "email", userIdentifier: "012345abc")
     }
     
-    func createEventInvite() {
+    @objc func createEventInvite() {
         Kitemetrics.shared.logInvite(method: "Test Invite Method", code: "Test Invite Code 0001")
     }
     
-    func createEventRedeemInvite() {
+    @objc func createEventRedeemInvite() {
         Kitemetrics.shared.logRedeemInvite(code: "Test Invite Code 0001")
     }
     
-    func createError() {
+    @objc func createError() {
         Kitemetrics.shared.logError("Test Error")
     }
     
-    func createAddToCart() {
+    @objc func createAddToCart() {
         //If you have the SKProduct from an In-App Purchase you can use the below
         //Kitemetrics.shared.logInAppPurchase(SKProduct, quantity: Int, purchaseType: KFPurchaseType)
         //else if the SKProduct is unavailble or this is an eCommerce transaction you can pass the productIdentifier, price and currency code manually
         Kitemetrics.shared.logAddToCart(productIdentifier: "com.kitefaster.demo.Kitemetrics-Example.TestPurchase1", price: Decimal(0.99), currencyCode: "USD", quantity: 1, purchaseType: .appleInAppConsumable)
     }
     
-    func createPurchase() {
+    @objc func createPurchase() {
         //If you have the SKProduct from an In-App Purchase you can use the below
         //Kitemetrics.shared.logInAppPurchase(SKProduct, quantity: Int, purchaseType: KFPurchaseType)
         //else if the SKProduct is unavailble or this is an eCommerce transaction you can pass the productIdentifier, price and currency code manually

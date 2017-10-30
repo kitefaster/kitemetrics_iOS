@@ -452,7 +452,7 @@ class KFQueue {
             }
         }
         
-        if self.isApiKeySet && self.reachability.isReachable {
+        if self.isApiKeySet && self.reachability.connection != .none {
             if Kitemetrics.shared.currentBackoffValue < Kitemetrics.shared.currentBackoffMultiplier {
                 Kitemetrics.shared.currentBackoffValue = Kitemetrics.shared.currentBackoffValue + 1
                 KFLog.p("Connection timeout, skip")
