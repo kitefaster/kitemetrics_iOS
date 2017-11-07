@@ -199,7 +199,7 @@ public class Kitemetrics: NSObject {
     }
     
     func postEvent(_ event: String) {
-        if event.characters.count > 255 {
+        if event.count > 255 {
             KFError.printError("Length of event must be less than 256 characters. Truncating.")
         }
         var request = URLRequest(url: URL(string: Kitemetrics.kEventsEndpoint)!)
@@ -215,14 +215,14 @@ public class Kitemetrics: NSObject {
     ///- parameter method: The method used to sign up (e.g. Facebook, Google, Email)
     ///- parameter userIdentifier: This is used for tracking the number of active users.  Do not use Personally Identifiable Information (e.g. email addresses, phone numbers, full name, social security numbers, etc).
     public func logSignUp(method: String, userIdentifier: String) {
-        if method.characters.count > 255 {
+        if method.count > 255 {
             KFError.printError("Length of method must be less than 256 characters. Truncating.")
         }
-        if userIdentifier.characters.count == 0 {
+        if userIdentifier.count == 0 {
             KFError.printError("Length of userIdentifier must be greater than 0 characters.")
             return
         }
-        if userIdentifier.characters.count > 255 {
+        if userIdentifier.count > 255 {
             KFError.printError("Length of userIdentifier must be less than 256 characters. Truncating.")
         }
         
@@ -250,11 +250,11 @@ public class Kitemetrics: NSObject {
     ///- parameter method: The method used to send the invite (e.g. Facebook, Twitter, Email, Text)
     ///- parameter code: Optional. Referral or other invite code used.
     public func logInvite(method: String, code: String? = nil) {
-        if method.characters.count > 255 {
+        if method.count > 255 {
             KFError.printError("Length of method must be less than 256 characters. Truncating.")
         }
         
-        if code != nil && code!.characters.count > 255 {
+        if code != nil && code!.count > 255 {
             KFError.printError("Length of code must be less than 256 characters. Truncating.")
         }
         
@@ -270,7 +270,7 @@ public class Kitemetrics: NSObject {
     ///Log when a user redeems an invite code.
     ///- parameter code: Referral or other invite code used.
     public func logRedeemInvite(code: String) {
-        if code.characters.count > 255 {
+        if code.count > 255 {
             KFError.printError("Length of code must be less than 256 characters. Truncating.")
         }
         
@@ -290,7 +290,7 @@ public class Kitemetrics: NSObject {
     }
     
     func postError(_ error: String, isInternal: Bool) {
-        if error.characters.count > 1000 {
+        if error.count > 1000 {
             KFError.printError("Length of error must be less than 1000 characters. Truncating.")
         }
         

@@ -12,7 +12,7 @@ import Foundation
 extension String {
     
     func truncate(_ length: Int) -> String {
-        if self.characters.count > length {
+        if self.count > length {
             let index = self.index(self.startIndex, offsetBy: length)
             let newString = String(self[...index])
             return newString

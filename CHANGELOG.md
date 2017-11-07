@@ -4,6 +4,13 @@ To install or update the Kitemetrics iOS client see the [readme](https://github.
 
 # Changelog
 
+## 1.1.3()(2017-11-07)
+
+##### Enhancements
+
+* Use Swift 4.0
+* Update Example project for iPhone X
+
 ## 1.1.2 (2017-10-24)
 
 ##### Enhancements

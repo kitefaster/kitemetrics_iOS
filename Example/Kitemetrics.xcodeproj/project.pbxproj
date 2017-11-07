@@ -12,6 +12,7 @@
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
 		609C23851F6CC63500BABEE7 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 609C23841F6CC63500BABEE7 /* Default-568h@2x.png */; };
+		60F22FCB1FB258ED00D8F99B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 60F22FCA1FB258ED00D8F99B /* LaunchScreen.storyboard */; };
 		9B87E6509CCBF323AA3EDC8A /* Pods_Kitemetrics_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 734193832DAB491E60838043 /* Pods_Kitemetrics_Example.framework */; };
 		DDBD99D2059F23BA3258CFFB /* Pods_Kitemetrics_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 23373BB587B0B38B4642A93D /* Pods_Kitemetrics_Tests.framework */; };
 /* End PBXBuildFile section */
@@ -41,6 +42,7 @@
 		607FACEA1AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACEB1AFB9204008FA782 /* Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests.swift; sourceTree = "<group>"; };
 		609C23841F6CC63500BABEE7 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		60F22FCA1FB258ED00D8F99B /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Kitemetrics/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		67B6A2AFA6587BC6305312AC /* Kitemetrics.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = Kitemetrics.podspec; path = ../Kitemetrics.podspec; sourceTree = "<group>"; };
 		734193832DAB491E60838043 /* Pods_Kitemetrics_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Kitemetrics_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DECECBDCD13AF96716C27C9A /* Pods-Kitemetrics_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Kitemetrics_Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Kitemetrics_Tests/Pods-Kitemetrics_Tests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -81,6 +83,7 @@
 		607FACC71AFB9204008FA782 = {
 			isa = PBXGroup;
 			children = (
+				60F22FCA1FB258ED00D8F99B /* LaunchScreen.storyboard */,
 				609C23841F6CC63500BABEE7 /* Default-568h@2x.png */,
 				607FACF51AFB993E008FA782 /* Podspec Metadata */,
 				607FACD21AFB9204008FA782 /* Example for Kitemetrics */,
@@ -249,6 +252,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				60F22FCB1FB258ED00D8F99B /* LaunchScreen.storyboard in Resources */,
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
 				609C23851F6CC63500BABEE7 /* Default-568h@2x.png in Resources */,
 			);

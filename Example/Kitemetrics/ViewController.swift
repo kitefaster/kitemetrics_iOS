@@ -21,7 +21,15 @@ class ViewController: UIViewController {
         self.view.addSubview(scrollView)
         scrollView.snp.makeConstraints {
             (make) -> Void in
-            make.edges.equalTo(self.view)
+            if #available(iOS 11.0, *) {
+                make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
+            } else {
+                make.top.equalTo(self.view)
+                make.bottom.equalTo(self.view)
+            }
+            make.left.equalTo(self.view)
+            make.right.equalTo(self.view)
         }
         
         let eventButton = UIButton(type: .custom)
