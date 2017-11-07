@@ -20,8 +20,8 @@ The Kitemetrics iOS Client SDK automatically logs Apple Search Ads keyword attri
 ## Requirements
 
 - iOS 8.0+
-- Xcode 8.0+
-- Objective-C or Swift 3.0+
+- Xcode 9.0+
+- Objective-C or Swift 4.0+
 
 ## Installation
 
