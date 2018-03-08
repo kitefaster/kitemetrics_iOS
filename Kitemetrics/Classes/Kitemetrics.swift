@@ -359,18 +359,20 @@ public class Kitemetrics: NSObject {
         ADClient.shared().requestAttributionDetails({ (attributionDetails: [String : NSObject]?, error: Error?) in
             KFLog.p("Requesting attribution details responded.")
             if error != nil {
-                let adClientError = error as! ADClientError
-                if adClientError.code == ADClientError.unknown {
-                    //Apple Search Ads unknown error.  Retry in a few seconds.
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 3.0 + TimeInterval(attemptNumber)) {
-                        self.postSearchAdsAttribution()
+                let adClientError = error as? ADClientError
+                if adClientError != nil {
+                    if adClientError!.code == ADClientError.unknown {
+                        //Apple Search Ads unknown error.  Retry in a few seconds.
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0 + TimeInterval(attemptNumber)) {
+                            self.postSearchAdsAttribution()
+                        }
+                        KFError.logError(error!)
+                    } else if adClientError!.code == ADClientError.limitAdTracking {
+                        KFLog.p("Limit ad tracking is turned on.")
+                        KFUserDefaults.setNeedsSearchAdsAttribution(false)
+                    } else {
+                        KFError.logError(error!)
                     }
-                    KFError.logError(error!)
-                } else if adClientError.code == ADClientError.limitAdTracking {
-                    KFLog.p("Limit ad tracking is turned on.")
-                    KFUserDefaults.setNeedsSearchAdsAttribution(false)
-                } else {
-                    KFError.logError(error!)
                 }
             } else if attributionDetails != nil {
                 let attribution = attributionDetails!["Version3.1"]
