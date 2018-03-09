@@ -49,15 +49,17 @@ public class KFDevice {
     }
     
     class func stringValueFromInfoDict(_ key: String) -> String {
-        let dict = NSDictionary(dictionary: Bundle.main.infoDictionary!)
-        guard let bundleObject = dict.object(forKey: key) else {
-            return ""
+        let dict = Bundle.main.infoDictionary
+        if dict != nil {
+            let value = dict![key]
+            if value == nil {
+                return ""
+            } else {
+                return value as! String
+            }
         }
         
-        guard let string = bundleObject as? String else {
-            return ""
-        }
-        return string
+        return ""
     }
     
     //e.g. Version 10.0 (Build 14A345)
