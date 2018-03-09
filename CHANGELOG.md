@@ -4,7 +4,19 @@ To install or update the Kitemetrics iOS client see the [readme](https://github.
 
 # Changelog
 
-## 1.1.3()(2017-11-07)
+## 1.1.5(2018-03-09)
+
+##### Bug Fixes
+
+* Use Swift dictionary instead of NSDictionary
+
+## 1.1.4(2018-03-08)
+
+##### Bug Fixes
+
+* Make conversion of Apple Search Ads Attribution Error to ADClientError optional
+
+## 1.1.3(2017-11-07)
 
 ##### Enhancements
 
