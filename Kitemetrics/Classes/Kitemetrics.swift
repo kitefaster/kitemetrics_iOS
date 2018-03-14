@@ -14,6 +14,7 @@ import iAd
 public class Kitemetrics: NSObject {
 
     ///Kitemetrics singleton
+    @objc
     public static let shared = Kitemetrics()
     
     static let kServer = "https://cloud.kitemetrics.com:443"
@@ -56,6 +57,7 @@ public class Kitemetrics: NSObject {
         sessionManager.delegate = self
     }
     
+    @objc
     public func initSession(apiKey: String) {
         initSession(apiKey: apiKey, userIdentifier: "")
     }
@@ -63,6 +65,7 @@ public class Kitemetrics: NSObject {
     ///Call on app startup, preferablly in AppDelegate application(_:didFinishLaunchingWithOptions:)
     ///- parameter apiKey: Obtain the apiKey from https://cloud.kitemetrics.com
     ///- parameter userIdentifier: Optional.  This is used for tracking the number of active users.  Do not use Personally Identifiable Information (e.g. email addresses, phone numbers, full name, social security numbers, etc).
+    @objc
     public func initSession(apiKey: String, userIdentifier: String) {
         KFLog.p("Kitemetrics shared instance initialized with apiKey!")
         self.apiKey = apiKey
@@ -194,6 +197,7 @@ public class Kitemetrics: NSObject {
     
     ///Log a custom event.
     ///- parameter eventName: Max size of 255
+    @objc
     public func logEvent(_ eventName: String) {
         postEvent(eventName)
     }
@@ -214,6 +218,7 @@ public class Kitemetrics: NSObject {
     ///Log when a user signs up or creates an account.
     ///- parameter method: The method used to sign up (e.g. Facebook, Google, Email)
     ///- parameter userIdentifier: This is used for tracking the number of active users.  Do not use Personally Identifiable Information (e.g. email addresses, phone numbers, full name, social security numbers, etc).
+    @objc
     public func logSignUp(method: String, userIdentifier: String) {
         if method.count > 255 {
             KFError.printError("Length of method must be less than 256 characters. Truncating.")
@@ -249,6 +254,7 @@ public class Kitemetrics: NSObject {
     ///Log when a user shares or invites someone to use the app.
     ///- parameter method: The method used to send the invite (e.g. Facebook, Twitter, Email, Text)
     ///- parameter code: Optional. Referral or other invite code used.
+    @objc
     public func logInvite(method: String, code: String? = nil) {
         if method.count > 255 {
             KFError.printError("Length of method must be less than 256 characters. Truncating.")
@@ -269,6 +275,7 @@ public class Kitemetrics: NSObject {
     
     ///Log when a user redeems an invite code.
     ///- parameter code: Referral or other invite code used.
+    @objc
     public func logRedeemInvite(code: String) {
         if code.count > 255 {
             KFError.printError("Length of code must be less than 256 characters. Truncating.")
@@ -285,6 +292,7 @@ public class Kitemetrics: NSObject {
     
     ///Log an error message
     ///- errorMessage: Max size of 1000
+    @objc
     public func logError(_ errorMessage: String) {
         postError(errorMessage, isInternal: false)
     }
@@ -304,7 +312,8 @@ public class Kitemetrics: NSObject {
     }
     
     ///Log when a user adds an in-app item to their cart
-    public func logInAppAddToCart(_ product: SKProduct, quantity: Int, purchaseType: KFPurchaseType? = .unknown) {
+    @objc
+    public func logInAppAddToCart(_ product: SKProduct, quantity: Int, purchaseType: KFPurchaseType = .unknown) {
         var request = URLRequest(url: URL(string: Kitemetrics.kPurchasesEndpoint)!)
         guard let json = KFHelper.inAppPurchaseJson(product, quantity: quantity, funnel: KFPurchaseFunnel.addToCart, purchaseType: purchaseType) else {
             return
@@ -315,6 +324,7 @@ public class Kitemetrics: NSObject {
     }
     
     ///Log when a user adds an item to their cart
+    @objc
     public func logAddToCart(productIdentifier: String, price: Decimal, currencyCode: String, quantity: Int, purchaseType: KFPurchaseType) {
         var request = URLRequest(url: URL(string: Kitemetrics.kPurchasesEndpoint)!)
         guard let json = KFHelper.purchaseJson(productIdentifier: productIdentifier, price: price, currencyCode: currencyCode, quantity: quantity, funnel: KFPurchaseFunnel.addToCart, purchaseType: purchaseType) else {
@@ -326,11 +336,13 @@ public class Kitemetrics: NSObject {
     }
     
     ///Log when a user completes an in-app purchase
+    @objc
     public func logInAppPurchase(_ product: SKProduct, quantity: Int) {
         logInAppPurchase(product, quantity:quantity, purchaseType: KFPurchaseType.unknown)
     }
     
     ///Log when a user completes an in-app purchase
+    @objc
     public func logInAppPurchase(_ product: SKProduct, quantity: Int, purchaseType: KFPurchaseType) {
         var request = URLRequest(url: URL(string: Kitemetrics.kPurchasesEndpoint)!)
         guard let json = KFHelper.inAppPurchaseJson(product, quantity: quantity, funnel: KFPurchaseFunnel.purchase, purchaseType: purchaseType) else {
@@ -342,6 +354,7 @@ public class Kitemetrics: NSObject {
     }
     
     ///Log when a user completes a purchase
+    @objc
     public func logPurchase(productIdentifier: String, price: Decimal, currencyCode: String, quantity: Int, purchaseType: KFPurchaseType) {
         var request = URLRequest(url: URL(string: Kitemetrics.kPurchasesEndpoint)!)
         guard let json = KFHelper.purchaseJson(productIdentifier: productIdentifier, price: price, currencyCode: currencyCode, quantity: quantity, funnel: KFPurchaseFunnel.purchase, purchaseType: purchaseType) else {
@@ -413,6 +426,7 @@ public class Kitemetrics: NSObject {
         self.queue.addItem(item: request)
     }
     
+    @objc
     public func kitemetricsDeviceId() -> Int {
         return KFUserDefaults.deviceId()
     }
