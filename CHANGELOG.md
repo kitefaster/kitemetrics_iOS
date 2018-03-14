@@ -4,6 +4,12 @@ To install or update the Kitemetrics iOS client see the [readme](https://github.
 
 # Changelog
 
+## 1.1.6(2018-03-14)
+
+##### Bug Fixes
+
+* Add @objc to public functions to support Objective-C projects with Swift 4.
+
 ## 1.1.5(2018-03-09)
 
 ##### Bug Fixes
