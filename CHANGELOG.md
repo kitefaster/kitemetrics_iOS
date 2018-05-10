@@ -4,6 +4,12 @@ To install or update the Kitemetrics iOS client see the [readme](https://github.
 
 # Changelog
 
+## 1.1.7(2018-05-10)
+
+##### Enhancements
+
+* Increase wait time between retries.  Add a cap to retries from Apple server errors.
+
 ## 1.1.6(2018-03-14)
 
 ##### Bug Fixes
