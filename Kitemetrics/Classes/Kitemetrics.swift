@@ -7,6 +7,7 @@
 //
 
 import StoreKit
+import AdSupport
 import iAd
 
 ///Kitemetrics iOS Client SDK
@@ -374,16 +375,35 @@ public class Kitemetrics: NSObject {
             if error != nil {
                 let adClientError = error as? ADClientError
                 if adClientError != nil {
-                    if adClientError!.code == ADClientError.unknown {
-                        //Apple Search Ads unknown error.  Retry in a few seconds.
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0 + TimeInterval(attemptNumber)) {
-                            self.postSearchAdsAttribution()
-                        }
-                        KFError.logError(error!)
-                    } else if adClientError!.code == ADClientError.limitAdTracking {
+                    if adClientError!.code == ADClientError.limitAdTracking {
                         KFLog.p("Limit ad tracking is turned on.")
                         KFUserDefaults.setNeedsSearchAdsAttribution(false)
                     } else {
+                        //Apple Search Ads error.  Retry.
+                        if attemptNumber < 8 {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + (60 * TimeInterval(attemptNumber))) {
+                                self.postSearchAdsAttribution()
+                            }
+                        } else {
+                            //Cap retries for click latency
+                            KFUserDefaults.setNeedsSearchAdsAttribution(false)
+                        }
+                        KFError.logError(error!)
+                    }
+                } else {
+                    if ASIdentifierManager.shared().isAdvertisingTrackingEnabled == false {
+                        KFLog.p("Limit ad tracking is turned on.")
+                        KFUserDefaults.setNeedsSearchAdsAttribution(false)
+                    } else {
+                        //Apple Search Ads error.  Retry.
+                        if attemptNumber < 8 {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + (60 * TimeInterval(attemptNumber))) {
+                                self.postSearchAdsAttribution()
+                            }
+                        } else {
+                            //Cap retries for click latency
+                            KFUserDefaults.setNeedsSearchAdsAttribution(false)
+                        }
                         KFError.logError(error!)
                     }
                 }
@@ -394,8 +414,8 @@ public class Kitemetrics: NSObject {
             
                     if (a["iad-campaign-name"] == nil || a["iad-campaign-name"] as! String == "") && (a["iad-org-name"] == nil || a["iad-org-name"] as! String == "") && (a["iad-keyword"] == nil || a["iad-keyword"] as! String == "") {
                         //Empty.  Try again in a few seconds.
-                        if attemptNumber < 10 {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0 + TimeInterval(attemptNumber)) {
+                        if attemptNumber < 8 {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0 + (2 * TimeInterval(attemptNumber))) {
                                 self.postSearchAdsAttribution()
                             }
                         } else {

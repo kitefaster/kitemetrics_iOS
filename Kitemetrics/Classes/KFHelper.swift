@@ -39,7 +39,7 @@ public enum KFPurchaseType: Int {
 class KFHelper {
     
     class func applicationDict() -> [String: String] {
-        var dict = [String: String]()
+        var dict: [String: String] = [String: String]()
         dict["bundleDisplayName"] = KFDevice.appBundleDisplayName()
         dict["bundleName"] = KFDevice.appBundleName()
         dict["bundleId"] = KFDevice.appBundleId()
@@ -47,7 +47,7 @@ class KFHelper {
     }
     
     class func deviceDict() -> [String: String] {
-        var dict = [String: String]()
+        var dict: [String: String] = [String: String]()
         dict["deviceIdForVendor"] = KFDevice.identifierForVendor()
         var deviceType = KFDevice.deviceType()
         deviceType = deviceType.replacingOccurrences(of: "\0", with: "")
