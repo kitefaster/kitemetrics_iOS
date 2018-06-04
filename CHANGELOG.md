@@ -4,6 +4,12 @@ To install or update the Kitemetrics iOS client see the [readme](https://github.
 
 # Changelog
 
+## 1.1.8(2018-06-04)
+
+##### Bug Fixes
+
+* Fix simulator warning.  Update example project settings.
+
 ## 1.1.7(2018-05-10)
 
 ##### Enhancements
