@@ -1,5 +1,5 @@
 PODS:
-  - Kitemetrics (1.1.7)
+  - Kitemetrics (1.1.8)
   - SnapKit (4.0.0)
 
 DEPENDENCIES:
@@ -7,7 +7,7 @@ DEPENDENCIES:
   - SnapKit (= 4.0.0)
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
+  https://github.com/cocoapods/specs.git:
     - SnapKit
 
 EXTERNAL SOURCES:
@@ -15,9 +15,9 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  Kitemetrics: 34b1585e9e0927725ac2b0d92f765881b55d9e13
+  Kitemetrics: a4fccf28d806c15f597a9f2987786a1f299d8ad0
   SnapKit: a42d492c16e80209130a3379f73596c3454b7694
 
 PODFILE CHECKSUM: 6421fa0fbc1f66ab42d50fec09f284db50222198
 
-COCOAPODS: 1.5.0
+COCOAPODS: 1.5.3
