@@ -52,6 +52,12 @@ Then, run the following command:
 $ pod install
 ```
 
+also run the following update command to ensure you have the latest version:
+
+```bash
+$ pod update Kitemetrics
+```
+
 ### Manually
 
 If you do not want to use the CocoaPods dependency manager, you can integrate Kitemetrics into your project manually by copy/pasting the files into your project or by adding as a git submodule.
