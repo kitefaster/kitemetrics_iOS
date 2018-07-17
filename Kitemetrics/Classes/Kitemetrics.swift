@@ -44,6 +44,9 @@ public class Kitemetrics: NSObject {
     static let kPurchasesEndpoint = kServer + kAPI + kPurchases
     static let kAttributionsEndpoint = kServer + kAPI + kAttributions
     
+    static let kMaxSearchAdAttributionAttempts = 1000
+    static let kAttributionTryAgainSeconds = TimeInterval(1)
+    
     var apiKey: String = ""
     public var userIdentifier: String = ""
     let sessionManager = KFSessionManager()
@@ -132,18 +135,28 @@ public class Kitemetrics: NSObject {
                 //Number of days since install
                 let installDate = KFUserDefaults.installDate()
                 let diff = Date().timeIntervalSince1970 - installDate.timeIntervalSince1970
-                if diff > 2592000 {
-                    //If it has been more than 30 days since install and we still haven't retrieved attribution data.  It is no longer available.  Stop trying.
+                if diff > 31557600 {
+                    //If it has been more than 1 year since install and we still haven't retrieved attribution data.  It is no longer available.  Stop trying.
                     KFUserDefaults.setNeedsSearchAdsAttribution(false)
                 } else {
                     //Click Latency
                     //Most users that click on a Search Ads impression immediately download the app. When the app is opened immediately and the
                     //Search Ads Attribution API is called, the corresponding ad click might not have been processed by our system yet due to some
                     //latency. We recommend setting a delay of a few seconds before retrieving attribution data.
-                    //Source: https://searchads.apple.com/help/pdf/attribution-api.pdf
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    //Source: https://searchads.apple.com/v/advanced/help/b/docs/pdf/attribution-api.pdf
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                         self.postSearchAdsAttribution()
                     }
+                }
+            } else {
+                if KFUserDefaults.attributionDate() == nil && KFUserDefaults.attributionClientVersionId() == 0 && KFUserDefaults.attributionRequestAttemptNumber() < Kitemetrics.kMaxSearchAdAttributionAttempts {
+                    if ASIdentifierManager.shared().isAdvertisingTrackingEnabled == false {
+                        KFUserDefaults.setAttributionDate()
+                    } else {
+                        //Resend attribution
+                        self.postSearchAdsAttribution()
+                    }
+                    
                 }
             }
         }
@@ -376,12 +389,13 @@ public class Kitemetrics: NSObject {
                 let adClientError = error as? ADClientError
                 if adClientError != nil {
                     if adClientError!.code == ADClientError.limitAdTracking {
-                        KFLog.p("Limit ad tracking is turned on.")
+                        KFLog.p("Limit ad tracking is turned on.  ADClientError.limitAdTracking")
                         KFUserDefaults.setNeedsSearchAdsAttribution(false)
+                        KFUserDefaults.setAttributionDate()
                     } else {
                         //Apple Search Ads error.  Retry.
-                        if attemptNumber < 8 {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + (60 * TimeInterval(attemptNumber))) {
+                        if attemptNumber < Kitemetrics.kMaxSearchAdAttributionAttempts {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + Kitemetrics.kAttributionTryAgainSeconds) {
                                 self.postSearchAdsAttribution()
                             }
                         } else {
@@ -392,16 +406,17 @@ public class Kitemetrics: NSObject {
                     }
                 } else {
                     if ASIdentifierManager.shared().isAdvertisingTrackingEnabled == false {
-                        KFLog.p("Limit ad tracking is turned on.")
+                        KFLog.p("Limit ad tracking is turned on.  isAdvertisingTrackingEnabled == false")
                         KFUserDefaults.setNeedsSearchAdsAttribution(false)
+                        KFUserDefaults.setAttributionDate()
                     } else {
                         //Apple Search Ads error.  Retry.
-                        if attemptNumber < 8 {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + (60 * TimeInterval(attemptNumber))) {
+                        if attemptNumber < Kitemetrics.kMaxSearchAdAttributionAttempts {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + Kitemetrics.kAttributionTryAgainSeconds) {
                                 self.postSearchAdsAttribution()
                             }
                         } else {
-                            //Cap retries for click latency
+                            //Cap retries
                             KFUserDefaults.setNeedsSearchAdsAttribution(false)
                         }
                         KFError.logError(error!)
@@ -411,15 +426,17 @@ public class Kitemetrics: NSObject {
                 let attribution = attributionDetails!["Version3.1"]
                 if attribution != nil {
                     let a = attribution! as! [String : Any]
-            
-                    if (a["iad-campaign-name"] == nil || a["iad-campaign-name"] as! String == "") && (a["iad-org-name"] == nil || a["iad-org-name"] as! String == "") && (a["iad-keyword"] == nil || a["iad-keyword"] as! String == "") {
+                    
+                    if a["iad-attribution"] != nil && a["iad-attribution"] as? String == "false" {
+                        // do nothing
+                    } else if (a["iad-campaign-name"] == nil || a["iad-campaign-name"] as! String == "") && (a["iad-org-name"] == nil || a["iad-org-name"] as! String == "") && (a["iad-keyword"] == nil || a["iad-keyword"] as! String == "") {
                         //Empty.  Try again in a few seconds.
-                        if attemptNumber < 8 {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0 + (2 * TimeInterval(attemptNumber))) {
+                        if attemptNumber < Kitemetrics.kMaxSearchAdAttributionAttempts {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + Kitemetrics.kAttributionTryAgainSeconds) {
                                 self.postSearchAdsAttribution()
                             }
                         } else {
-                            //Cap retries for click latency
+                            //Cap retries
                             KFUserDefaults.setNeedsSearchAdsAttribution(false)
                         }
 
@@ -432,6 +449,7 @@ public class Kitemetrics: NSObject {
                 }
                 self.postAttribution(jsonData)
                 KFUserDefaults.setNeedsSearchAdsAttribution(false)
+                KFUserDefaults.setAttribution(attributionDetails!)
             } else {
                 KFError.logErrorMessage("nil attribuiton and nil error.")
             }
@@ -444,6 +462,7 @@ public class Kitemetrics: NSObject {
         request.httpBody = attribuiton
         
         self.queue.addItem(item: request)
+        self.timerManager.fireTimerManually()
     }
     
     @objc

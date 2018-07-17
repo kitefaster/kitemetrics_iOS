@@ -11,7 +11,7 @@ import Foundation
 class KFUserDefaults {
     
     class func setApplicationId(kitemetricsApplicationId: Int) {
-        UserDefaults.standard.setValue(kitemetricsApplicationId, forKey: "com.kitemetrics.applicationId")
+        UserDefaults.standard.set(kitemetricsApplicationId, forKey: "com.kitemetrics.applicationId")
     }
     
     class func applicationId() -> Int? {
@@ -19,7 +19,7 @@ class KFUserDefaults {
     }
     
     class func setDeviceId(kitemetricsDeviceId: Int) {
-        UserDefaults.standard.setValue(kitemetricsDeviceId, forKey: "com.kitemetrics.deviceId")
+        UserDefaults.standard.set(kitemetricsDeviceId, forKey: "com.kitemetrics.deviceId")
     }
     
     class func deviceId() -> Int {
@@ -27,15 +27,15 @@ class KFUserDefaults {
     }
     
     class func setVersionId(kitemetricsVersionId: Int?) {
-        UserDefaults.standard.setValue(kitemetricsVersionId, forKey: "com.kitemetrics.versionId")
+        UserDefaults.standard.set(kitemetricsVersionId, forKey: "com.kitemetrics.versionId")
     }
     
-    class func versionId() -> Int? {
+    class func versionId() -> Int {
         return UserDefaults.standard.integer(forKey: "com.kitemetrics.versionId")
     }
     
     class func setLastVersion(_ lastVersion: [String: String]) {
-        UserDefaults.standard.setValue(lastVersion, forKey: "com.kitemetrics.lastVersion")
+        UserDefaults.standard.set(lastVersion, forKey: "com.kitemetrics.lastVersion")
     }
     
     class func lastVersion() -> [String: String]? {
@@ -43,7 +43,7 @@ class KFUserDefaults {
     }
     
     class func setLaunchTime(_ datetime: Date) {
-        UserDefaults.standard.setValue(datetime, forKey: "com.kitemetrics.launchTime")
+        UserDefaults.standard.set(datetime, forKey: "com.kitemetrics.launchTime")
     }
     
     class func launchTime() -> Date? {
@@ -51,7 +51,7 @@ class KFUserDefaults {
     }
 
     class func setCloseTime(_ datetime: Date) {
-        UserDefaults.standard.setValue(datetime, forKey: "com.kitemetrics.closeTime")
+        UserDefaults.standard.set(datetime, forKey: "com.kitemetrics.closeTime")
     }
     
     class func closeTime() -> Date? {
@@ -59,7 +59,7 @@ class KFUserDefaults {
     }
     
     class func setLastAttemptToSendErrorQueue(_ datetime: Date) {
-        UserDefaults.standard.setValue(datetime, forKey: "com.kitemetrics.lastAttemptToSendErrorQueue")
+        UserDefaults.standard.set(datetime, forKey: "com.kitemetrics.lastAttemptToSendErrorQueue")
     }
     
     class func lastAttemptToSendErrorQueue() -> Date? {
@@ -67,7 +67,7 @@ class KFUserDefaults {
     }
     
     class func setNeedsSearchAdsAttribution(_ needsAttribution: Bool) {
-        UserDefaults.standard.setValue(needsAttribution, forKey: "com.kitemetrics.needsSearchAdsAttribution")
+        UserDefaults.standard.set(needsAttribution, forKey: "com.kitemetrics.needsSearchAdsAttribution")
     }
     
     class func needsSearchAdsAttribution() -> Bool {
@@ -93,12 +93,43 @@ class KFUserDefaults {
     class func incrementAttributionRequestAttemptNumber() -> Int {
         var attemptNumber = attributionRequestAttemptNumber()
         attemptNumber = attemptNumber + 1
-        UserDefaults.standard.setValue(attemptNumber, forKey: "com.kitemetrics.attributionRequestAttemptNumber")
+        UserDefaults.standard.set(attemptNumber, forKey: "com.kitemetrics.attributionRequestAttemptNumber")
         return attemptNumber
     }
     
     class func attributionRequestAttemptNumber() -> Int {
         return UserDefaults.standard.integer(forKey: "com.kitemetrics.attributionRequestAttemptNumber")
+    }
+    
+    class func setAttribution(_ attribution: [String : NSObject]) {
+        UserDefaults.standard.set(attribution, forKey: "com.kitemetrics.attribution")
+        KFUserDefaults.setAttributionDate()
+        KFUserDefaults.setAttributionClientVersionId()
+    }
+    
+    class func attribution() -> [String : NSObject]? {
+        return UserDefaults.standard.value(forKey: "com.kitemetrics.attribution") as?  [String : NSObject]
+    }
+    
+    class func setAttributionDate() {
+        UserDefaults.standard.set(Date(), forKey: "com.kitemetrics.attributionDate")
+    }
+    
+    class func attributionDate() -> Date? {
+        return UserDefaults.standard.value(forKey: "com.kitemetrics.attributionDate") as? Date
+    }
+    
+    class func setAttributionClientVersionId() {
+        if KFUserDefaults.attributionClientVersionId() == 0 {
+            let versionId = KFUserDefaults.versionId()
+            if versionId > 0 {
+                UserDefaults.standard.set(versionId, forKey: "com.kitemetrics.attributionClientVersionId")
+            }
+        }
+    }
+    
+    class func attributionClientVersionId() -> Int {
+        return UserDefaults.standard.integer(forKey: "com.kitemetrics.attributionClientVersionId")
     }
 
 }

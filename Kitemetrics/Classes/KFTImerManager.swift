@@ -80,4 +80,10 @@ class KFTimerManager {
         KFUserDefaults.setCloseTime(Date())
     }
     
+    func fireTimerManually() {
+        stopTimer()
+        perfromTimerActions()
+        startTimer()
+    }
+    
 }

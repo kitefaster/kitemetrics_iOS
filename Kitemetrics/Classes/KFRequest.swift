@@ -11,9 +11,10 @@ import Foundation
 
 class KFRequest {
     
-    var requestApplicationId = false;
-    var requestDeviceId = false;
-    var requestVersionId = false;
+    var requestApplicationId = false
+    var requestDeviceId = false
+    var requestVersionId = false
+    var queue: KFQueue? = nil
     
     func postRequest(_ storedRequest: URLRequest, filename: URL?, isImmediate: Bool = false) {
         KFLog.p("Sending request to " + storedRequest.url!.absoluteString)
@@ -50,11 +51,30 @@ class KFRequest {
                     }
                 }
                 
-                if dictionary!["versionId"] == nil, let versionId = KFUserDefaults.versionId() {
+                if dictionary!["versionId"] == nil {
+                    let versionId = KFUserDefaults.versionId()
                     if versionId > 0 {
                         dictionary!["versionId"] = versionId
                     } else {
                         postImmediateVersionId()
+                        
+                        if request.url?.absoluteString == Kitemetrics.kAttributionsEndpoint && self.queue != nil {
+                            //add to bottom of queue to send again later with the versionId.
+                            self.queue!.addItem(item: storedRequest)
+                            return
+                        }
+                    }
+                }
+                
+                if request.url?.absoluteString == Kitemetrics.kAttributionsEndpoint {
+                    //Append attempt number to dictionary
+                    dictionary!["attempt"] = KFUserDefaults.attributionRequestAttemptNumber()
+                    let attributionClientVersionId = KFUserDefaults.attributionClientVersionId()
+                    if attributionClientVersionId == 0 {
+                        KFUserDefaults.setAttributionClientVersionId()
+                    } else {
+                        //Always use original versionId when sending the attribution
+                        dictionary!["versionId"] = attributionClientVersionId
                     }
                 }
 

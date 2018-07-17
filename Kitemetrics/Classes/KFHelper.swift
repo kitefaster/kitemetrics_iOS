@@ -49,9 +49,10 @@ class KFHelper {
     class func deviceDict() -> [String: String] {
         var dict: [String: String] = [String: String]()
         dict["deviceIdForVendor"] = KFDevice.identifierForVendor()
+        dict["advertisingIdentifier"] = KFDevice.advertisingIdentifier()
+        
         var deviceType = KFDevice.deviceType()
         deviceType = deviceType.replacingOccurrences(of: "\0", with: "")
-        dict["advertisingIdentifier"] = KFDevice.advertisingIdentifier()
         dict["deviceType"] = deviceType
         return dict
     }
@@ -74,10 +75,9 @@ class KFHelper {
     
     class func sessionDict(launchTime: Date, closeTime: Date) -> [String: Any] {
         var dict = [String: Any]()
-        if let versionId = KFUserDefaults.versionId() {
-            if versionId > 0 {
-                dict["versionId"] = versionId
-            }
+        let versionId = KFUserDefaults.versionId()
+        if versionId > 0 {
+            dict["versionId"] = versionId
         }
         
         dict["start"] = launchTime.timeIntervalSince1970
@@ -91,10 +91,9 @@ class KFHelper {
         dict["timestamp"] = Date().timeIntervalSince1970
         dict["event"] = event.truncate(255)
         
-        if let versionId = KFUserDefaults.versionId() {
-            if versionId > 0 {
-                dict["versionId"] = versionId
-            }
+        let versionId = KFUserDefaults.versionId()
+        if versionId > 0 {
+            dict["versionId"] = versionId
         }
         return dict
     }
@@ -105,11 +104,10 @@ class KFHelper {
         dict["method"] = method.truncate(255)
         dict["userIdentifier"] = userIdentifier.truncate(255)
         
-        if let versionId = KFUserDefaults.versionId() {
+        let versionId = KFUserDefaults.versionId()
             if versionId > 0 {
                 dict["versionId"] = versionId
             }
-        }
         return dict
     }
     
@@ -121,10 +119,9 @@ class KFHelper {
             dict["code"] = code!.truncate(255)
         }
         
-        if let versionId = KFUserDefaults.versionId() {
-            if versionId > 0 {
-                dict["versionId"] = versionId
-            }
+        let versionId = KFUserDefaults.versionId()
+        if versionId > 0 {
+            dict["versionId"] = versionId
         }
         return dict
     }
@@ -134,10 +131,9 @@ class KFHelper {
         dict["timestamp"] = Date().timeIntervalSince1970
         dict["code"] = code.truncate(255)
         
-        if let versionId = KFUserDefaults.versionId() {
-            if versionId > 0 {
-                dict["versionId"] = versionId
-            }
+        let versionId = KFUserDefaults.versionId()
+        if versionId > 0 {
+            dict["versionId"] = versionId
         }
         return dict
     }
@@ -148,10 +144,9 @@ class KFHelper {
         dict["error"] = error.truncate(1000)
         dict["isInternal"] = isInternal
         
-        if let versionId = KFUserDefaults.versionId() {
-            if versionId > 0 {
-                dict["versionId"] = versionId
-            }
+        let versionId = KFUserDefaults.versionId()
+        if versionId > 0 {
+            dict["versionId"] = versionId
         }
         return dict
     }
@@ -184,10 +179,9 @@ class KFHelper {
         dict["funnel"] = funnel.rawValue
         dict["purchaseTypeValue"] = purchaseType.rawValue
         
-        if let versionId = KFUserDefaults.versionId() {
-            if versionId > 0 {
-                dict["versionId"] = versionId
-            }
+        let versionId = KFUserDefaults.versionId()
+        if versionId > 0 {
+            dict["versionId"] = versionId
         }
         return dict
     }

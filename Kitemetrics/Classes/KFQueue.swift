@@ -33,6 +33,8 @@ class KFQueue {
     static let kMaxErrorFilesToSave = 500
     
     init() {
+        self.requester.queue = self
+        
         NotificationCenter.default.addObserver(self, selector: #selector(didReceivePostSuccess), name: NSNotification.Name(rawValue: "com.kitefaster.KFRequest.Post.Success"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(didReceivePostError), name: NSNotification.Name(rawValue: "com.kitefaster.KFRequest.Post.Error"), object: nil)
         
