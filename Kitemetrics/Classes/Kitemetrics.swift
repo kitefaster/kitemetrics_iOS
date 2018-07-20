@@ -45,7 +45,7 @@ public class Kitemetrics: NSObject {
     static let kAttributionsEndpoint = kServer + kAPI + kAttributions
     
     static let kMaxSearchAdAttributionAttempts = 1000
-    static let kAttributionTryAgainSeconds = TimeInterval(1)
+    static let kAttributionTryAgainSeconds = TimeInterval(2)
     
     var apiKey: String = ""
     public var userIdentifier: String = ""
