@@ -4,6 +4,14 @@ To install or update the Kitemetrics iOS client see the [readme](https://github.
 
 # Changelog
 
+## 1.1.9(2018-07-21)
+
+##### Enhancements
+
+* Improve polling.
+* Increase retry cap.
+* Send attribution immediatly.
+
 ## 1.1.8(2018-06-04)
 
 ##### Bug Fixes
