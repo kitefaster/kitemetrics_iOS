@@ -10,7 +10,8 @@ Pod::Spec.new do |s|
   s.name             = 'Kitemetrics'
   s.version          = '1.1.9'
   s.summary          = 'iOS App Analytics, Apple Search Ads Attribution, and Reporting.'
-
+  s.swift_version   = '4.2'
+  
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
 #   * Try to keep it short, snappy and to the point.
