@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'Kitemetrics'
-  s.version          = '1.1.9'
+  s.version          = '1.1.10'
   s.summary          = 'iOS App Analytics, Apple Search Ads Attribution, and Reporting.'
   s.swift_version   = '4.2'
   

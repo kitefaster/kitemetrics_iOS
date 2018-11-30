@@ -4,7 +4,7 @@ platform :ios, '8.0'
 
 target 'Kitemetrics_Example' do
   pod 'Kitemetrics', :path => '../'
-  pod 'SnapKit', '4.0.0'
+  pod 'SnapKit', '4.2.0'
 
   target 'Kitemetrics_Tests' do
     inherit! :search_paths
