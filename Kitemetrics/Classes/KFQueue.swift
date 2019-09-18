@@ -11,7 +11,7 @@ import Foundation
 
 class KFQueue {
     
-    let reachability = KFReachability(hostname: Kitemetrics.kServer)!
+    let reachability: KFReachability?
     let requester = KFRequest()
     var queue = [URLRequest]()
     var outgoingRequests = [URL: Int]()
@@ -33,6 +33,15 @@ class KFQueue {
     static let kMaxErrorFilesToSave = 500
     
     init() {
+        do {
+            self.reachability = try KFReachability(hostname: Kitemetrics.kServer)
+        } catch {
+            do {
+                self.reachability = try KFReachability()
+            } catch {
+                self.reachability = nil
+            }
+        }
         self.requester.queue = self
         
         NotificationCenter.default.addObserver(self, selector: #selector(didReceivePostSuccess), name: NSNotification.Name(rawValue: "com.kitefaster.KFRequest.Post.Success"), object: nil)
@@ -454,7 +463,7 @@ class KFQueue {
             }
         }
         
-        if self.isApiKeySet && self.reachability.connection != .none {
+        if self.isApiKeySet && self.reachability != nil && self.reachability!.connection != .unavailable {
             if Kitemetrics.shared.currentBackoffValue < Kitemetrics.shared.currentBackoffMultiplier {
                 Kitemetrics.shared.currentBackoffValue = Kitemetrics.shared.currentBackoffValue + 1
                 KFLog.p("Connection timeout, skip")

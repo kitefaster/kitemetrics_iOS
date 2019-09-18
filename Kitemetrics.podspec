@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'Kitemetrics'
-  s.version          = '1.1.9'
+  s.version          = '1.1.10'
   s.summary          = 'iOS App Analytics, Apple Search Ads Attribution, and Reporting.'
 
 # This description is used to generate tags and improve search results.
@@ -24,7 +24,7 @@ Kitemetrics provides keyword level attribution for Apple Search Ads. It associat
   s.homepage         = 'https://github.com/kitefaster/kitemetrics_iOS'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'Apache License, Version 2.0', :file => 'LICENSE' }
-  s.author           = { 'Kitefaster, LLC' => '' }
+  s.author           = { 'Kitemetrics' => '' }
   s.source           = { :git => 'https://github.com/kitefaster/kitemetrics_iOS.git', :tag => s.version.to_s }
   s.social_media_url = 'https://twitter.com/kitefasterApps'
 

@@ -65,13 +65,13 @@ If you do not want to use the CocoaPods dependency manager, you can integrate Ki
 ## Usage
 
 #### Initialize the session in AppDelegate
-##### Swift 4.0
+##### Swift 5.0
 ```swift
 import Kitemetrics
 
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-  func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+  func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
       Kitemetrics.shared.initSession(apiKey: "API_KEY")
       return true
   }
