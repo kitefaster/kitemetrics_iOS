@@ -1,5 +1,5 @@
 PODS:
-  - Kitemetrics (1.1.10)
+  - Kitemetrics (1.1.11)
   - SnapKit (5.0.1)
 
 DEPENDENCIES:
@@ -15,7 +15,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  Kitemetrics: d029c36b23cd94bacba4649dabd848799f098937
+  Kitemetrics: 557e1398ac8dd6b0ce3ae766defdd864d8d89532
   SnapKit: 97b92857e3df3a0c71833cce143274bf6ef8e5eb
 
 PODFILE CHECKSUM: 2b919086ce7f4b8821e8c880425b75496da828ad
