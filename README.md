@@ -1,11 +1,11 @@
-# Kitemetrics iOS Client SDK
+# Kitemetrics® iOS Client SDK
 
 <!-- [![CI Status](http://img.shields.io/travis/Kitefaster/Kitemetrics.svg?style=flat)](https://travis-ci.org/Kitefaster/Kitemetrics)
 [![Version](https://img.shields.io/cocoapods/v/Kitemetrics.svg?style=flat)](http://cocoapods.org/pods/Kitemetrics)
 [![License](https://img.shields.io/cocoapods/l/Kitemetrics.svg?style=flat)](http://cocoapods.org/pods/Kitemetrics)
 [![Platform](https://img.shields.io/cocoapods/p/Kitemetrics.svg?style=flat)](http://cocoapods.org/pods/Kitemetrics) -->
 
-The Kitemetrics iOS Client SDK automatically logs Apple Search Ads keyword attributions, installs, and user sessions. In addition, you can log sign up and other custom events.  Reports are available from [http://kitemetrics.com/](http://kitemetrics.com/?utm_source=github&utm_medium=readme&utm_campaign=cp).
+The Kitemetrics® iOS Client SDK automatically logs Apple Search Ads keyword attributions, installs, and user sessions. In addition, you can log sign up and other custom events.  Reports are available from [http://kitemetrics.com/](http://kitemetrics.com/?utm_source=github&utm_medium=readme&utm_campaign=cp).
 
 ## Contents
 
@@ -33,9 +33,9 @@ The Kitemetrics iOS Client SDK automatically logs Apple Search Ads keyword attri
 $ gem install cocoapods
 ```
 
-> CocoaPods 1.1.0+ is required to build Kitemetrics
+> CocoaPods 1.1.0+ is required to build the SDK
 
-To integrate Kitemetrics into your Xcode project using CocoaPods, specify it in your `Podfile`:
+To integrate the SDK into your Xcode project using CocoaPods, specify it in your `Podfile`:
 
 ```ruby
 platform :ios, '8.0'
@@ -60,7 +60,7 @@ $ pod update Kitemetrics
 
 ### Manually
 
-If you do not want to use the CocoaPods dependency manager, you can integrate Kitemetrics into your project manually by copy/pasting the files into your project or by adding as a git submodule.
+If you do not want to use the CocoaPods dependency manager, you can integrate the SDK into your project manually by copy/pasting the files into your project or by adding as a git submodule.
 
 ## Usage
 
@@ -128,8 +128,9 @@ Full documentation is available at [http://kitemetrics.com/docs/](http://kitemet
 
 ## Notes
 
-Kitemetrics uses the Advertising Identifier (IDFA).  When submitting an app to Apple you should answer "Yes" to the Advertising Identifier question and check the box next to "Attribute an action taken within this app to a previously served advertisement".
+The SDK uses the Advertising Identifier (IDFA).  When submitting an app to Apple you should answer "Yes" to the Advertising Identifier question and check the box next to "Attribute an action taken within this app to a previously served advertisement".
 
 ## License
 
-The Kitemetrics iOS client SDK is available under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0). See the LICENSE file for more info.
+The iOS client SDK is available under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0). See the LICENSE file for more info.
+Kitemetrics® is a registered trademark of Kitemetrcs.
