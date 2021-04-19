@@ -1,15 +1,15 @@
 //
-//  KFSession.swift
-//  Pods
+//  KMSession.swift
+//  Kitemetrics
 //
-//  Created by Kitefaster on 11/7/16.
-//  Copyright © 2017 Kitefaster, LLC. All rights reserved.
+//  Created by Kitemetrics on 11/7/16.
+//  Copyright © 2021 Kitemetrics. All rights reserved.
 //
 
 import Foundation
 
 
-class KFTimerManager {
+class KMTimerManager {
     
     var timer: Timer?
     static var kTimerInterval: TimeInterval = 10 //60
@@ -49,8 +49,8 @@ class KFTimerManager {
     
     func startTimer() {
         if self.timer == nil {
-            self.timer = Timer.scheduledTimer(timeInterval: KFTimerManager.kTimerInterval, target: self, selector: #selector(self.perfromTimerActions), userInfo: nil, repeats: true)
-            self.timer!.tolerance = KFTimerManager.kTimerInterval * 0.3
+            self.timer = Timer.scheduledTimer(timeInterval: KMTimerManager.kTimerInterval, target: self, selector: #selector(self.perfromTimerActions), userInfo: nil, repeats: true)
+            self.timer!.tolerance = KMTimerManager.kTimerInterval * 0.3
         }
     }
     
@@ -62,22 +62,22 @@ class KFTimerManager {
     }
     
     @objc func perfromTimerActions() {
-        KFLog.p("timer fired")
-        KFUserDefaults.setCloseTime(Date())
+        KMLog.p("timer fired")
+        KMUserDefaults.setCloseTime(Date())
         Kitemetrics.shared.queue.saveQueue()
     }
     
     func performForegroundActions() {
-        KFLog.p("startTimer")
+        KMLog.p("startTimer")
         Kitemetrics.shared.sessionManager.open()
         startTimer()
     }
     
     func performBackgroundActions() {
-        KFLog.p("stopTimer")
+        KMLog.p("stopTimer")
         stopTimer()
         Kitemetrics.shared.queue.saveQueue()
-        KFUserDefaults.setCloseTime(Date())
+        KMUserDefaults.setCloseTime(Date())
     }
     
     func fireTimerManually() {

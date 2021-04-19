@@ -2,8 +2,8 @@
 //  AppDelegate.swift
 //  Kitemetrics
 //
-//  Created by Kitefaster on 10/14/2016.
-//  Copyright © 2017 Kitefaster. All rights reserved.
+//  Created by Kitemetrics on 10/14/2016.
+//  Copyright © 2021 Kitemetrics. All rights reserved.
 //
 
 import UIKit
@@ -19,7 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         window = UIWindow(frame: UIScreen.main.bounds)
         if let window = self.window {
-            Kitemetrics.shared.initSession(apiKey: "API_KEY")
+            Kitemetrics.shared.initSession(withApiKey: "API_KEY")
 
             let viewController = ViewController()
             window.rootViewController = viewController

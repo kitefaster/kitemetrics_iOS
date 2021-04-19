@@ -4,6 +4,12 @@ To install or update the Kitemetrics iOS client see the [readme](https://github.
 
 # Changelog
 
+## 1.2.0(2021-04-19)
+
+##### Enhancements
+
+* Use AdServices AAAttribution attributionToken for Apple Search Ads attribtion on iOS 14.3+.
+
 ## 1.1.11(2019-09-18)
 
 ##### Enhancements

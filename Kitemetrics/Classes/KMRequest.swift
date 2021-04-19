@@ -1,40 +1,51 @@
 //
-//  KFRequest.swift
-//  Pods
+//  KMRequest.swift
+//  Kitemetrics
 //
-//  Created by Kitefaster on 10/31/16.
-//  Copyright © 2017 Kitefaster, LLC. All rights reserved.
+//  Created by Kitemetrics on 10/31/16.
+//  Copyright © 2021 Kitemetrics. All rights reserved.
 //
 
 import Foundation
 
-
-class KFRequest {
+class KMRequest {
     
     var requestApplicationId = false
     var requestDeviceId = false
     var requestVersionId = false
-    var queue: KFQueue? = nil
+    var queue: KMQueue? = nil
     
     func postRequest(_ storedRequest: URLRequest, filename: URL?, isImmediate: Bool = false) {
-        KFLog.p("Sending request to " + storedRequest.url!.absoluteString)
+        KMLog.p("Sending request to " + storedRequest.url!.absoluteString)
+        if Kitemetrics.shared.apiKey == "API_KEY" {
+            return
+        }
+        
         
         var request = storedRequest
         request.httpMethod = "POST"
-        request.setValue(Kitemetrics.shared.apiKey, forHTTPHeaderField: Kitemetrics.kAPIKey)
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        request.setValue(Kitemetrics.shared.apiKey, forHTTPHeaderField: "apiKey")
+        request.setValue(Kitemetrics.kitemetricsClientVersion, forHTTPHeaderField: "kitemetrics-client-version")
         request.httpShouldHandleCookies = false
         request.allowsCellularAccess = true
+        
+        if request.url?.absoluteString == Kitemetrics.kReceiptsEndpoint {
+            request.setValue("text/plain", forHTTPHeaderField: "Content-Type")
+        } else {
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        }
         
         let sendToServer = request.url?.absoluteString != Kitemetrics.kErrorsEndpoint
         
         if request.url?.absoluteString != Kitemetrics.kDevicesEndpoint &&
             request.url?.absoluteString != Kitemetrics.kVersionsEndpoint &&
             request.url?.absoluteString != Kitemetrics.kApplicationsEndpoint {
-            var dictionary = KFHelper.dictionaryFromJson(request.httpBody!)
+            var dictionary = KMHelper.dictionaryFromJson(request.httpBody!)
             
             if dictionary != nil {
-                if dictionary!["applicationId"] == nil, let applicationId = KFUserDefaults.applicationId() {
+                if dictionary!["applicationId"] == nil {
+                    let applicationId = KMUserDefaults.applicationId()
                     if applicationId > 0 {
                         dictionary!["applicationId"] = applicationId
                     } else {
@@ -43,16 +54,17 @@ class KFRequest {
                 }
                 
                 if dictionary!["deviceId"] == nil {
-                    let deviceId = KFUserDefaults.deviceId()
+                    let deviceId = KMUserDefaults.deviceId()
                     if deviceId > 0 {
                         dictionary!["deviceId"] = deviceId
                     } else {
                         postImmediateDeviceId()
+                        dictionary!["deviceIdForVendor"] = KMDevice.identifierForVendor()
                     }
                 }
                 
                 if dictionary!["versionId"] == nil {
-                    let versionId = KFUserDefaults.versionId()
+                    let versionId = KMUserDefaults.versionId()
                     if versionId > 0 {
                         dictionary!["versionId"] = versionId
                     } else {
@@ -68,17 +80,17 @@ class KFRequest {
                 
                 if request.url?.absoluteString == Kitemetrics.kAttributionsEndpoint {
                     //Append attempt number to dictionary
-                    dictionary!["attempt"] = KFUserDefaults.attributionRequestAttemptNumber()
-                    let attributionClientVersionId = KFUserDefaults.attributionClientVersionId()
+                    dictionary!["attempt"] = KMUserDefaults.attributionRequestAttemptNumber()
+                    let attributionClientVersionId = KMUserDefaults.attributionClientVersionId()
                     if attributionClientVersionId == 0 {
-                        KFUserDefaults.setAttributionClientVersionId()
+                        KMUserDefaults.setAttributionClientVersionId()
                     } else {
                         //Always use original versionId when sending the attribution
                         dictionary!["versionId"] = attributionClientVersionId
                     }
                 }
 
-                request.httpBody = KFHelper.jsonFromDictionary(dictionary!)
+                request.httpBody = KMHelper.jsonFromDictionary(dictionary!)
             }
         }
         
@@ -99,11 +111,11 @@ class KFRequest {
                 if (error.domain == NSURLErrorDomain || error.domain == kCFErrorDomainCFNetwork as String) && (error.code == -1001 || error.code == -1004){
                     //server down, increase timeout
                     Kitemetrics.shared.currentBackoffMultiplier = Kitemetrics.shared.currentBackoffMultiplier + 1
-                    KFLog.p("Timeout.  Set backoff to " + String(Kitemetrics.shared.currentBackoffMultiplier))
+                    KMLog.p("Timeout.  Set backoff to " + String(Kitemetrics.shared.currentBackoffMultiplier))
                     //Do not send notification.  Will attempt to resend again.
                 } else {
-                    KFLog.p("Debug err: " + err.debugDescription)
-                    KFError.logErrorMessage("Error sending request. " + err!.localizedDescription, sendToServer: sendToServer)
+                    KMLog.p("Debug err: " + err.debugDescription)
+                    KMError.logErrorMessage("Error sending request. " + err!.localizedDescription, sendToServer: sendToServer)
                     if !isImmediate {
                         NotificationCenter.default.post(name: Notification.Name(rawValue: "com.kitefaster.KFRequest.Post.Error"), object: nil, userInfo: userInfo)
                     }
@@ -111,7 +123,7 @@ class KFRequest {
                 return
             }
             guard let httpResponse = response as? HTTPURLResponse else {
-                KFError.logErrorMessage("HTTPURLResponse is nil.", sendToServer: sendToServer)
+                KMError.logErrorMessage("HTTPURLResponse is nil.", sendToServer: sendToServer)
                 if !isImmediate {
                     NotificationCenter.default.post(name: Notification.Name(rawValue: "com.kitefaster.KFRequest.Post.Error"), object: nil, userInfo: userInfo)
                 }
@@ -120,59 +132,63 @@ class KFRequest {
             
             let statusCode = httpResponse.statusCode
             
-            if (statusCode == 200) {
+            if statusCode == 200 {
                 do{
                     Kitemetrics.shared.currentBackoffMultiplier = 1
                     if request.url!.absoluteString.hasSuffix(Kitemetrics.kApplications) {
-                        let json = try JSONSerialization.jsonObject(with: data!, options:.allowFragments) as! [String: Any]
-                        
-                        if let id = json["id"] as? Int {
-                            KFLog.p("application id: " + String(id))
-                            KFUserDefaults.setApplicationId(kitemetricsApplicationId: id)
+                        if let json = try JSONSerialization.jsonObject(with: data!, options:.allowFragments) as? [String: Any] {
+                            if let id = json["id"] as? Int {
+                                KMLog.p("application id: " + String(id))
+                                KMUserDefaults.setApplicationId(id)
+                            }
                         }
-                    } else if request.url!.absoluteString.hasSuffix(Kitemetrics.kDevices) {
-                        let json = try JSONSerialization.jsonObject(with: data!, options:.allowFragments) as! [String: Any]
-                        
-                        if let id = json["id"] as? Int {
-                            KFLog.p("device id: " + String(id))
-                            KFUserDefaults.setDeviceId(kitemetricsDeviceId: id)
+                    } else if request.url!.absoluteString.hasSuffix(Kitemetrics.kDevices) || request.url!.absoluteString.hasSuffix(Kitemetrics.kAttributionTokens) {
+                        if let json = try JSONSerialization.jsonObject(with: data!, options:.allowFragments) as? [String: Any] {
+                            if let id = json["id"] as? Int {
+                                KMLog.p("device id: " + String(id))
+                                KMUserDefaults.setDeviceId(id)
+                            }
                         }
                     } else if request.url!.absoluteString.hasSuffix(Kitemetrics.kVersions) {
-                        let json = try JSONSerialization.jsonObject(with: data!, options:.allowFragments) as! [String: Any]
-                        
-                        if let id = json["id"] as? Int {
-                            KFLog.p("version id: " + String(id))
-                            KFUserDefaults.setVersionId(kitemetricsVersionId: id)
+                        if let json = try JSONSerialization.jsonObject(with: data!, options:.allowFragments) as? [String: Any]{
+                            if let id = json["id"] as? Int {
+                                KMLog.p("version id: " + String(id))
+                                KMUserDefaults.setVersionId(kitemetricsVersionId: id)
+                            }
                         }
                     } else  {
-                        KFLog.p("Posted " + request.url!.lastPathComponent)
+                        KMLog.p("Posted " + request.url!.lastPathComponent)
                     }
                     if !isImmediate {
                         NotificationCenter.default.post(name: Notification.Name(rawValue: "com.kitefaster.KFRequest.Post.Success"), object: nil, userInfo: userInfo)
                     }
                 } catch {
-                    KFError.logErrorMessage("Error with Json from 200: \(error.localizedDescription)", sendToServer: sendToServer)
+                    KMError.logErrorMessage("Error with Json from 200: \(error.localizedDescription)", sendToServer: sendToServer)
                     if !isImmediate {
                         NotificationCenter.default.post(name: Notification.Name(rawValue: "com.kitefaster.KFRequest.Post.Error"), object: nil, userInfo: userInfo)
                     }
                 }
+            } else if statusCode == 204 {
+                KMLog.p("Posted " + request.url!.lastPathComponent)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: "com.kitefaster.KFRequest.Post.Success"), object: nil, userInfo: userInfo)
             } else {
                 if statusCode == 502 || statusCode == 404 {
                     //server down, increase timeout
                     Kitemetrics.shared.currentBackoffMultiplier = Kitemetrics.shared.currentBackoffMultiplier + 1
-                    KFLog.p("Timeout. Set backoff to " + String(Kitemetrics.shared.currentBackoffMultiplier))
+                    KMLog.p("Timeout. Set backoff to " + String(Kitemetrics.shared.currentBackoffMultiplier))
                     //Do not send notification.  Will attempt to resend again.
-                } else if KFLog.debug {
+                } else if KMLog.debug {
                     do {
-                        let json = try JSONSerialization.jsonObject(with: data!, options:.allowFragments) as! [String: String]
-                        if let error = json["error"] {
-                            KFError.logErrorMessage(error, sendToServer: false)
-                            if !isImmediate {
-                                NotificationCenter.default.post(name: Notification.Name(rawValue: "com.kitefaster.KFRequest.Post.Error"), object: nil, userInfo: userInfo)
+                        if let json = try JSONSerialization.jsonObject(with: data!, options:.allowFragments) as? [String: String] {
+                            if let error = json["error"] {
+                                KMError.logErrorMessage(error, sendToServer: false)
+                                if !isImmediate {
+                                    NotificationCenter.default.post(name: Notification.Name(rawValue: "com.kitefaster.KFRequest.Post.Error"), object: nil, userInfo: userInfo)
+                                }
                             }
                         }
                     } catch {
-                        KFError.logErrorMessage("Error with Json from \(statusCode): \(error.localizedDescription)", sendToServer: sendToServer)
+                        KMError.logErrorMessage("Error with Json from \(statusCode): \(error.localizedDescription)", sendToServer: sendToServer)
                         if !isImmediate {
                             NotificationCenter.default.post(name: Notification.Name(rawValue: "com.kitefaster.KFRequest.Post.Error"), object: nil, userInfo: userInfo)
                         }
@@ -184,10 +200,10 @@ class KFRequest {
     
     func postImmediateApplication() {
         if self.requestApplicationId == false {
-            KFError.logErrorMessage("Need application Id", sendToServer: true)
+            KMError.logErrorMessage("Need application Id", sendToServer: false)
             self.requestApplicationId = true
             var request = URLRequest(url: URL(string: Kitemetrics.kApplicationsEndpoint)!)
-            guard let json = KFHelper.applicationJson() else {
+            guard let json = KMHelper.applicationJson() else {
                 return
             }
             request.httpBody = json
@@ -198,10 +214,10 @@ class KFRequest {
     
     func postImmediateDeviceId() {
         if self.requestDeviceId == false {
-            KFError.logErrorMessage("Need device Id", sendToServer: true)
+            KMError.logErrorMessage("Need device Id", sendToServer: false)
             self.requestDeviceId = true
             var request = URLRequest(url: URL(string: Kitemetrics.kDevicesEndpoint)!)
-            guard let json = KFHelper.deviceJson() else {
+            guard let json = KMHelper.deviceJson() else {
                 return
             }
             request.httpBody = json
@@ -212,49 +228,48 @@ class KFRequest {
     
     func postImmediateVersionId() {
         if self.requestVersionId == false {
-            KFError.logErrorMessage("Need version Id", sendToServer: true)
+            KMError.logErrorMessage("Need version Id", sendToServer: false)
             self.requestVersionId = true
             
             //TODO: Refactor duplicate code from Kitemetrics.appLaunch()
-            let lastVersion = KFUserDefaults.lastVersion()
-            let currentVersion = KFHelper.versionDict()
+            let lastVersion = KMUserDefaults.lastVersion()
+            let currentVersion = KMHelper.versionDict()
             
-            var installType = KFInstallType.unknown
+            var installType = KMInstallType.unknown
             if lastVersion == nil {
-                installType = KFInstallType.newInstall
+                installType = KMInstallType.newInstall
             } else if lastVersion! != currentVersion {
                 if lastVersion!["appVersion"] != currentVersion["appVersion"] {
-                    installType = KFInstallType.appVersionUpdate
+                    installType = KMInstallType.appVersionUpdate
                 } else if lastVersion!["userIdentifier"] != currentVersion["userIdentifier"] {
-                    installType = KFInstallType.userChange
+                    installType = KMInstallType.userChange
                 } else if lastVersion!["osVersion"] != currentVersion["osVersion"] || lastVersion!["osCountry"] != currentVersion["osCountry"] || lastVersion!["osLanguage"] != currentVersion["osLanguage"] {
-                    installType = KFInstallType.osChange
+                    installType = KMInstallType.osChange
                 }
             }
-            KFUserDefaults.setLastVersion(currentVersion)
+            KMUserDefaults.setLastVersion(currentVersion)
             
             
             var modifiedVersionDict: [String: Any] = currentVersion
             modifiedVersionDict["timestamp"] = Date().timeIntervalSince1970
             modifiedVersionDict["installType"] = installType.rawValue
             
-            if let applicationId = KFUserDefaults.applicationId() {
-                if applicationId > 0 {
-                    modifiedVersionDict["applicationId"] = applicationId
-                } else {
-                    modifiedVersionDict["bundleId"] = KFDevice.appBundleId()
-                }
+            let applicationId = KMUserDefaults.applicationId()
+            if applicationId > 0 {
+                modifiedVersionDict["applicationId"] = applicationId
+            } else {
+                modifiedVersionDict["bundleId"] = KMDevice.appBundleId()
             }
             
-            let deviceId = KFUserDefaults.deviceId()
+            let deviceId = KMUserDefaults.deviceId()
             if deviceId > 0 {
                 modifiedVersionDict["deviceId"] = deviceId
             } else {
-                modifiedVersionDict["deviceIdForVendor"] = KFDevice.identifierForVendor()
+                modifiedVersionDict["deviceIdForVendor"] = KMDevice.identifierForVendor()
             }
 
             var request = URLRequest(url: URL(string: Kitemetrics.kVersionsEndpoint)!)
-            guard let json = KFHelper.jsonFromDictionary(modifiedVersionDict) else {
+            guard let json = KMHelper.jsonFromDictionary(modifiedVersionDict) else {
                 return
             }
             request.httpBody = json

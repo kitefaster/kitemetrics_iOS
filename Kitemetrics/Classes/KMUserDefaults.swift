@@ -1,24 +1,24 @@
 //
-//  KFUserDefaults.swift
-//  Pods
+//  KMUserDefaults.swift
+//  Kitemetrics
 //
-//  Created by Kitefaster on 10/27/16.
-//  Copyright © 2017 Kitefaster, LLC. All rights reserved.
+//  Created by Kitemetrics on 10/27/16.
+//  Copyright © 2021 Kitemetrics. All rights reserved.
 //
 
 import Foundation
 
-class KFUserDefaults {
+class KMUserDefaults {
     
-    class func setApplicationId(kitemetricsApplicationId: Int) {
+    class func setApplicationId(_ kitemetricsApplicationId: Int) {
         UserDefaults.standard.set(kitemetricsApplicationId, forKey: "com.kitemetrics.applicationId")
     }
     
-    class func applicationId() -> Int? {
+    class func applicationId() -> Int {
         return UserDefaults.standard.integer(forKey: "com.kitemetrics.applicationId")
     }
     
-    class func setDeviceId(kitemetricsDeviceId: Int) {
+    class func setDeviceId(_ kitemetricsDeviceId: Int) {
         UserDefaults.standard.set(kitemetricsDeviceId, forKey: "com.kitemetrics.deviceId")
     }
     
@@ -81,13 +81,16 @@ class KFUserDefaults {
     class func installDate() -> Date {
         let value = UserDefaults.standard.value(forKey: "com.kitemetrics.installDate")
         if value != nil {
-            return value! as! Date
-        } else {
-            //Install date not yet set.  Set it now.
-            let today = Date()
-            setInstallDate(date: today)
-            return today
+            let val = value as? Date
+            if val != nil {
+                return val!
+            }
         }
+        
+        //Install date not yet set.  Set it now.
+        let today = Date()
+        setInstallDate(date: today)
+        return today
     }
     
     class func incrementAttributionRequestAttemptNumber() -> Int {
@@ -103,8 +106,8 @@ class KFUserDefaults {
     
     class func setAttribution(_ attribution: [String : NSObject]) {
         UserDefaults.standard.set(attribution, forKey: "com.kitemetrics.attribution")
-        KFUserDefaults.setAttributionDate()
-        KFUserDefaults.setAttributionClientVersionId()
+        KMUserDefaults.setAttributionDate()
+        KMUserDefaults.setAttributionClientVersionId()
     }
     
     class func attribution() -> [String : NSObject]? {
@@ -120,8 +123,8 @@ class KFUserDefaults {
     }
     
     class func setAttributionClientVersionId() {
-        if KFUserDefaults.attributionClientVersionId() == 0 {
-            let versionId = KFUserDefaults.versionId()
+        if KMUserDefaults.attributionClientVersionId() == 0 {
+            let versionId = KMUserDefaults.versionId()
             if versionId > 0 {
                 UserDefaults.standard.set(versionId, forKey: "com.kitemetrics.attributionClientVersionId")
             }
@@ -130,6 +133,32 @@ class KFUserDefaults {
     
     class func attributionClientVersionId() -> Int {
         return UserDefaults.standard.integer(forKey: "com.kitemetrics.attributionClientVersionId")
+    }
+    
+    class func setAttributionToken(_ attributionTokenString: String) {
+        UserDefaults.standard.set(attributionTokenString, forKey: "com.kitemetrics.attributionToken")
+    }
+    
+    // The Attribution Token when ATTrackingManager.AuthorizationStatus is in any status
+    class func attributionToken() -> String? {
+        return UserDefaults.standard.value(forKey: "com.kitemetrics.attributionToken") as? String
+    }
+    
+    class func setAttributionTokenWithAuthorization(_ attributionTokenString: String) {
+        UserDefaults.standard.set(attributionTokenString, forKey: "com.kitemetrics.attributionTokenWithAuthorization")
+    }
+    
+    // The Attribution Token when ATTrackingManager.AuthorizationStatus == .authorized
+    class func attributionTokenWithAuthorization() -> String? {
+        return UserDefaults.standard.value(forKey: "com.kitemetrics.attributionTokenWithAuthorization") as? String
+    }
+    
+    class func setAttributionTokenTimestamp() {
+        UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: "com.kitemetrics.attributionTokenTimestamp")
+    }
+    
+    class func attributionTokenTimestamp() -> TimeInterval? {
+        return UserDefaults.standard.value(forKey: "com.kitemetrics.attributionTokenTimestamp") as? TimeInterval
     }
 
 }

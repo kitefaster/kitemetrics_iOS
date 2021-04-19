@@ -1,5 +1,5 @@
 //
-//  KFMutex.swift
+//  KMMutex.swift
 //  CwlUtils
 //
 //  Created by Matt Gallagher on 2015/02/03.
@@ -21,14 +21,14 @@
 import Foundation
 
 /// A basic mutex protocol that requires nothing more than "performing work inside the mutex".
-public protocol KFScopedMutex {
+public protocol KMScopedMutex {
     /// Perform work inside the mutex
     func sync<R>(execute work: () throws -> R) rethrows -> R
     func trySync<R>(execute work: () throws -> R) rethrows -> R?
 }
 
 /// A more specific kind of mutex that assume an underlying primitive and unbalanced lock/trylock/unlock operators
-public protocol KFRawMutex: KFScopedMutex {
+public protocol KMRawMutex: KMScopedMutex {
     associatedtype MutexPrimitive
     
     /// The raw primitive is exposed as an "unsafe" public property for faster access in some cases
@@ -39,7 +39,7 @@ public protocol KFRawMutex: KFScopedMutex {
     func unbalancedUnlock()
 }
 
-extension KFRawMutex {
+extension KMRawMutex {
     /** RECOMMENDATION: until Swift can inline between modules or at least optimize @noescape closures to the stack, if this file is linked into another compilation unit (i.e. linked as part of the CwlUtils.framework but used from another module) it might be a good idea to copy and paste the relevant `fastsync` implementation code into your file (or module and delete `private` if whole module optimization is enabled) and use it instead, allowing the function to be inlined.
      ~~~
      private extension UnfairLock {
@@ -71,7 +71,7 @@ extension KFRawMutex {
 }
 
 /// A basic wrapper around the "NORMAL" and "RECURSIVE" `pthread_mutex_t` (a safe, general purpose FIFO mutex). This type is a "class" type to take advantage of the "deinit" method and prevent accidental copying of the `pthread_mutex_t`.
-public final class KFThreadMutex: KFRawMutex {
+public final class KMThreadMutex: KMRawMutex {
     public typealias MutexPrimitive = pthread_mutex_t
     
     // Non-recursive "PTHREAD_MUTEX_NORMAL" and recursive "PTHREAD_MUTEX_RECURSIVE" mutex types.

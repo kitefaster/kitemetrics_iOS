@@ -1,9 +1,9 @@
 use_frameworks!
-platform :ios, '10.0'
+platform :ios, '13.0'
 
 
 target 'Kitemetrics_Example' do
-  pod 'Kitemetrics', :path => '../'
+  pod 'Kitemetrics', :path => '../.'
   pod 'SnapKit', '~> 5.0.0'
 
   target 'Kitemetrics_Tests' do

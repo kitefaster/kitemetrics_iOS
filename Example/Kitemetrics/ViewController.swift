@@ -2,16 +2,19 @@
 //  ViewController.swift
 //  Kitemetrics
 //
-//  Created by Kitefaster on 10/14/2016.
-//  Copyright © 2017 Kitefaster. All rights reserved.
+//  Created by Kitemetrics on 10/14/2016.
+//  Copyright © 2021 Kitemetrics. All rights reserved.
 //
 
 import UIKit
 import SnapKit
 import Kitemetrics
+import AppTrackingTransparency
 
 class ViewController: UIViewController {
 
+    var attributionDetails: KMAttributionDetails?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.white
@@ -121,6 +124,26 @@ class ViewController: UIViewController {
             make.centerX.equalTo(self.view)
             make.width.equalTo(400)
             make.height.equalTo(44)
+        }
+        
+        Kitemetrics.shared.attributionDetails { (result: KMAttributionDetails?) in
+            self.attributionDetails = result
+            if self.attributionDetails != nil {
+                print(self.attributionDetails!)
+            }
+        }
+        
+        let requestToTrackButton = UIButton(type: .custom)
+        requestToTrackButton.backgroundColor = UIColor.black
+        requestToTrackButton.setTitle("Request to Track Permission", for: .normal)
+        requestToTrackButton.addTarget(self, action: #selector(requestToTrack), for: .touchUpInside)
+        scrollView.addSubview(requestToTrackButton)
+        requestToTrackButton.snp.makeConstraints {
+            (make) -> Void in
+            make.top.equalTo(purchaseButton.snp.bottom).offset(20)
+            make.centerX.equalTo(self.view)
+            make.width.equalTo(400)
+            make.height.equalTo(44)
             make.bottom.equalTo(scrollView)
         }
         
@@ -158,6 +181,12 @@ class ViewController: UIViewController {
         //Kitemetrics.shared.logInAppPurchase(SKProduct, quantity: Int, purchaseType: KFPurchaseType)
         //else if the SKProduct is unavailble or this is an eCommerce transaction you can pass the productIdentifier, price and currency code manually
         Kitemetrics.shared.logPurchase(productIdentifier: "com.kitefaster.demo.Kitemetrics-Example.TestPurchase1", price: Decimal(0.99), currencyCode: "USD", quantity: 1, purchaseType: .appleInAppConsumable)
+    }
+    
+    @objc func requestToTrack() {
+        if #available(iOS 14.3, *) {
+            ATTrackingManager.requestTrackingAuthorization(completionHandler: {_ in Kitemetrics.shared.attributeWithTrackingAuthorization() })
+        }
     }
 
 }

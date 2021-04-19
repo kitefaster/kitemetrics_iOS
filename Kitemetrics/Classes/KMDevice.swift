@@ -1,9 +1,9 @@
 //
-//  KFDevice.swift
-//  Pods
+//  KMDevice.swift
+//  Kitemetrics
 //
-//  Created by Kitefaster on 10/21/16.
-//  Copyright © 2017 Kitefaster, LLC. All rights reserved.
+//  Created by Kitemetrics on 10/21/16.
+//  Copyright © 2021 Kitemetrics. All rights reserved.
 //
 
 import Foundation
@@ -11,7 +11,7 @@ import AdSupport
 import UIKit
 
 
-public class KFDevice {
+public class KMDevice {
     
     //The build-version-number string for the bundle
     public class func appBuildVersion() -> String {
@@ -55,7 +55,10 @@ public class KFDevice {
             if value == nil {
                 return ""
             } else {
-                return value as! String
+                guard let val = value as? String else {
+                    return ""
+                }
+                return val
             }
         }
         
@@ -72,7 +75,7 @@ public class KFDevice {
         var systemInfo = utsname()
         uname(&systemInfo)
         guard let deviceType = NSString(bytes: &systemInfo.machine, length: Int(_SYS_NAMELEN), encoding: String.Encoding.ascii.rawValue) as String? else {
-            return KFDevice.model()
+            return KMDevice.model()
         }
         return deviceType
     }

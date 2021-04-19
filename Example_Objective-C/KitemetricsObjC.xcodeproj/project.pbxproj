@@ -180,7 +180,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-KitemetricsObjC/Pods-KitemetricsObjC-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-KitemetricsObjC/Pods-KitemetricsObjC-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Kitemetrics/Kitemetrics.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -189,7 +189,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-KitemetricsObjC/Pods-KitemetricsObjC-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-KitemetricsObjC/Pods-KitemetricsObjC-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		78CF24B7B12B588CCAC5C2C7 /* [CP] Check Pods Manifest.lock */ = {

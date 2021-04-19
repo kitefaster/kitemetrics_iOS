@@ -1,18 +1,18 @@
 //
-//  KFQueue.swift
-//  Pods
+//  KMQueue.swift
+//  Kitemetrics
 //
-//  Created by Kitefaster on 10/31/16.
-//  Copyright © 2017 Kitefaster, LLC. All rights reserved.
+//  Created by Kitemetrics on 10/31/16.
+//  Copyright © 2021 Kitemetrics. All rights reserved.
 //
 
 import Foundation
 
 
-class KFQueue {
+class KMQueue {
     
-    let reachability: KFReachability?
-    let requester = KFRequest()
+    let reachability = KFReachability(hostname: Kitemetrics.kServer)!
+    let requester = KMRequest()
     var queue = [URLRequest]()
     var outgoingRequests = [URL: Int]()
     
@@ -24,8 +24,8 @@ class KFQueue {
     var errorOnLastSend = false
     var isApiKeySet = false
     
-    let mutex = KFThreadMutex()
-    let errorMutex = KFThreadMutex()
+    let mutex = KMThreadMutex()
+    let errorMutex = KMThreadMutex()
     
     static let kMaxQueueSize = 30
     static let kTimeToWaitBeforeSendingMessagesWithErrors = 43200.0 // 12 hours
@@ -33,21 +33,12 @@ class KFQueue {
     static let kMaxErrorFilesToSave = 500
     
     init() {
-        do {
-            self.reachability = try KFReachability(hostname: Kitemetrics.kServer)
-        } catch {
-            do {
-                self.reachability = try KFReachability()
-            } catch {
-                self.reachability = nil
-            }
-        }
         self.requester.queue = self
         
         NotificationCenter.default.addObserver(self, selector: #selector(didReceivePostSuccess), name: NSNotification.Name(rawValue: "com.kitefaster.KFRequest.Post.Success"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(didReceivePostError), name: NSNotification.Name(rawValue: "com.kitefaster.KFRequest.Post.Error"), object: nil)
         
-        KFLog.p("KFQueue init")
+        KMLog.p("KFQueue init")
     }
     
     deinit {
@@ -55,12 +46,12 @@ class KFQueue {
     }
     
     func addItem(item: URLRequest) {
-        KFLog.p("KFQueue addItem with url: " +  item.url!.absoluteString)
+        KMLog.p("KFQueue addItem with url: " +  item.url!.absoluteString)
         self.mutex.sync {
             self.queue.append(item)
         }
         
-        if self.queue.count > KFQueue.kMaxQueueSize {
+        if self.queue.count > KMQueue.kMaxQueueSize {
             saveQueue()
         }
     }
@@ -68,7 +59,7 @@ class KFQueue {
     func saveQueue() {
         self.mutex.sync {
             if self.queue.count > 0 {
-                KFLog.p("KFQueue saveQueue, " + String(self.queue.count) + " items.")
+                KMLog.p("KFQueue saveQueue, " + String(self.queue.count) + " items.")
                 var filePath = queueDirectory()
                 let now = String(Date().timeIntervalSinceReferenceDate)
                 filePath = filePath.appendingPathComponent(now + ".data", isDirectory: false)
@@ -79,11 +70,11 @@ class KFQueue {
                     self.queue.removeAll()
                     self.newFilesToLoad = true
                 } catch let error {
-                    KFError.logError(error)
+                    KMError.logError(error)
                 }
                 
                 //If over file limit, remove older files
-                self.removeOldFiles(directory: queueDirectory(), maxFilesToKeep: KFQueue.kMaxQueueFilesToSave)
+                self.removeOldFiles(directory: queueDirectory(), maxFilesToKeep: KMQueue.kMaxQueueFilesToSave)
             }
         }
         
@@ -109,8 +100,8 @@ class KFQueue {
             //if we have too many files, delete the oldest files
             if contents != nil && contents!.count > maxFilesToKeep {
                 let orderedContents = contents!.sorted {a,b in
-                    let atime = KFQueue.timeIntervalFromFilename(a.lastPathComponent)
-                    let btime = KFQueue.timeIntervalFromFilename(b.lastPathComponent)
+                    let atime = KMQueue.timeIntervalFromFilename(a.lastPathComponent)
+                    let btime = KMQueue.timeIntervalFromFilename(b.lastPathComponent)
                     return atime < btime
                 }
                 contents = nil
@@ -121,17 +112,17 @@ class KFQueue {
                     do {
                         try FileManager.default.removeItem(at: url)
                     } catch let error {
-                        KFError.logError(error)
+                        KMError.logError(error)
                     }
                 }
             }
         } catch let error {
-            KFError.logError(error)
+            KMError.logError(error)
         }
     }
     
     func saveRequestToError(_ request: URLRequest) {
-        KFLog.p("KFQueue saveRequestToError")
+        KMLog.p("KFQueue saveRequestToError")
         self.errorMutex.sync {
             var filePath = queueErrorsDirectory()
             let now = String(Date().timeIntervalSinceReferenceDate)
@@ -141,38 +132,39 @@ class KFQueue {
                 let data = NSKeyedArchiver.archivedData(withRootObject: request)
                 try data.write(to: filePath, options: [NSData.WritingOptions.atomic])
             } catch let error {
-                KFError.logError(error)
+                KMError.logError(error)
             }
             
             //If over file limit, remove older files
-            self.removeOldFiles(directory: queueErrorsDirectory(), maxFilesToKeep: KFQueue.kMaxErrorFilesToSave)
+            self.removeOldFiles(directory: queueErrorsDirectory(), maxFilesToKeep: KMQueue.kMaxErrorFilesToSave)
         }
     }
     
     func loadFilesToSend() {
-        KFLog.p("KFQueue loadFilesToSend")
+        KMLog.p("KFQueue loadFilesToSend")
         let fileManager = FileManager.default
         do {
             var contents: [URL]? = nil
             try self.mutex.sync {
-                contents = try fileManager.contentsOfDirectory(at: queueDirectory(), includingPropertiesForKeys: [], options: FileManager.DirectoryEnumerationOptions.skipsHiddenFiles)
+                let directory = queueDirectory()
+                contents = try fileManager.contentsOfDirectory(at: directory, includingPropertiesForKeys: [], options: FileManager.DirectoryEnumerationOptions.skipsHiddenFiles)
                 self.newFilesToLoad = false
                 
                 if contents != nil && contents!.count > 0 {
                     self.filesToSend = contents!.sorted {a,b in
-                        let atime = KFQueue.timeIntervalFromFilename(a.lastPathComponent)
-                        let btime = KFQueue.timeIntervalFromFilename(b.lastPathComponent)
+                        let atime = KMQueue.timeIntervalFromFilename(a.lastPathComponent)
+                        let btime = KMQueue.timeIntervalFromFilename(b.lastPathComponent)
                         return atime < btime
                     }
                 }
             }
         } catch let error {
-            KFError.logError(error)
+            KMError.logError(error)
         }
     }
     
     func loadErrorFilesToSend() {
-        KFLog.p("KFQueue loadErrorFilesToSend")
+        KMLog.p("KFQueue loadErrorFilesToSend")
         let fileManager = FileManager.default
         do {
             var contents: [URL]? = nil
@@ -181,36 +173,40 @@ class KFQueue {
             
                 if contents != nil && contents!.count > 0 {
                     self.errorFilesToSend = contents!.sorted {a,b in
-                        let atime = KFQueue.timeIntervalFromFilename(a.lastPathComponent)
-                        let btime = KFQueue.timeIntervalFromFilename(b.lastPathComponent)
+                        let atime = KMQueue.timeIntervalFromFilename(a.lastPathComponent)
+                        let btime = KMQueue.timeIntervalFromFilename(b.lastPathComponent)
                         return atime < btime
                     }
                 }
             }
         } catch let error {
-            KFError.logError(error)
+            KMError.logError(error)
         }
     }
     
     func errorRequestToSend() -> (request: URLRequest, file: URL)? {
-        KFLog.p("KFQueue errorRequestToSend")
+        KMLog.p("KFQueue errorRequestToSend")
         if self.errorFilesToSend != nil && self.errorFilesToSend!.count > 0 {
             guard let file = self.errorFilesToSend?.first else {
                 return nil
             }
             do {
                 let data = try Data(contentsOf: file)
-                let request = NSKeyedUnarchiver.unarchiveObject(with: data) as! URLRequest
-                return (request, file)
+                let request = NSKeyedUnarchiver.unarchiveObject(with: data) as? URLRequest
+                if request == nil {
+                    return nil
+                } else {
+                    return (request!, file)
+                }
             } catch let error {
-                KFError.logError(error)
+                KMError.logError(error)
             }
         }
         return nil
     }
     
     func loadRequestsToSend() -> Bool {
-        KFLog.p("KFQueue loadRequestsToSend")
+        KMLog.p("KFQueue loadRequestsToSend")
         if self.filesToSend != nil && self.filesToSend!.count > 0 {
             guard let file = self.filesToSend?.first else {
                 return false
@@ -221,18 +217,18 @@ class KFQueue {
                 self.currentFile = file
                 return true
             } catch let error {
-                KFError.logError(error)
+                KMError.logError(error)
             }
         }
         return false
     }
     
     func sendNextRequest() {
-        KFLog.p("KFQueue sendNextRequest")
+        KMLog.p("KFQueue sendNextRequest")
         self.errorOnLastSend = false
         if isReadyToSend() {
             guard let request = self.requestsToSend?.first else {
-                KFError.logErrorMessage("sendNextRequest: Expected to find a request in the queue but it is empty.")
+                KMError.logErrorMessage("sendNextRequest: Expected to find a request in the queue but it is empty.")
                 return
             }
             self.requester.postRequest(request, filename: self.currentFile!)
@@ -240,7 +236,7 @@ class KFQueue {
     }
     
     func sendNextErrorRequest() {
-        KFLog.p("KFQueue sendNextErrorRequest")
+        KMLog.p("KFQueue sendNextErrorRequest")
         if isReadyToSend() {
             guard let (request, file) = errorRequestToSend() else {
                 return
@@ -250,10 +246,10 @@ class KFQueue {
     }
     
     @objc func didReceivePostSuccess(notification: Notification) {
-        KFLog.p("KFQueue didReceivePostSuccess")
+        KMLog.p("KFQueue didReceivePostSuccess")
         if let info = notification.userInfo as? Dictionary<String, Any> {
             guard let filename = info["filename"] as? URL else {
-                KFError.logErrorMessage("Post success notification is missing filename.")
+                KMError.logErrorMessage("Post success notification is missing filename.")
                 return
             }
             
@@ -263,34 +259,34 @@ class KFQueue {
                 if self.currentFile == filename {
                     removeCurrentSendRequestAndSendNext()
                 } else {
-                    KFError.logErrorMessage("didReceivePostSuccess: Filenames do not match.")
+                    KMError.logErrorMessage("didReceivePostSuccess: Filenames do not match.")
                 }
             }
         }
     }
     
     @objc func didReceivePostError(notification: Notification) {
-        KFLog.p("KFQueue didReceivePostError")
+        KMLog.p("KFQueue didReceivePostError")
         
         if let info = notification.userInfo as? Dictionary<String, Any> {
             guard let filename = info["filename"] as? URL else {
-                KFError.logErrorMessage("Post error notification is missing filename.")
+                KMError.logErrorMessage("Post error notification is missing filename.")
                 return
             }
             guard var request = info["request"] as? URLRequest else {
-                KFError.logErrorMessage("Post error notification is missing request.")
+                KMError.logErrorMessage("Post error notification is missing request.")
                 return
             }
             
             let isOldError = filename.pathExtension == "errdata"
             if isOldError {
                 if errorFilesToSend?.first != filename {
-                    KFError.logErrorMessage("didReceivePostError oldError: Filenames do not match.")
+                    KMError.logErrorMessage("didReceivePostError oldError: Filenames do not match.")
                     return
                 }
             } else {
                 if self.currentFile != filename {
-                    KFError.logErrorMessage("didReceivePostError: Filenames do not match.")
+                    KMError.logErrorMessage("didReceivePostError: Filenames do not match.")
                     return
                 }
             }
@@ -304,7 +300,7 @@ class KFQueue {
                 if requestAttemptCount == nil || requestAttemptCountStr == nil {
                     requestAttemptCount = 1
                     request.setValue("1", forHTTPHeaderField: "requestAttemptCount")
-                    KFError.logErrorMessage("Could not convert value of requestAttemptCount to int.  value = " + requestAttemptCountStr!)
+                    KMError.logErrorMessage("Could not convert value of requestAttemptCount to int.  value = " + requestAttemptCountStr!)
                 }
                 requestAttemptCount = requestAttemptCount! + 1
                 request.setValue(String(describing: requestAttemptCount!), forHTTPHeaderField: "requestAttemptCount")
@@ -315,7 +311,7 @@ class KFQueue {
                     let data = NSKeyedArchiver.archivedData(withRootObject: request)
                     try data.write(to: filename, options: [NSData.WritingOptions.atomic])
                 } catch let error {
-                    KFError.logError(error)
+                    KMError.logError(error)
                 }
                 skipCurrentErrorSendRequestAndSendNext(filename)
             } else {
@@ -330,7 +326,7 @@ class KFQueue {
                         let data = NSKeyedArchiver.archivedData(withRootObject: array)
                         try data.write(to: self.currentFile!, options: [NSData.WritingOptions.atomic])
                     } catch let error {
-                        KFError.logError(error)
+                        KMError.logError(error)
                     }
                             
                     //Make sure this flag is set last to prevent multi-threading conflicts
@@ -342,7 +338,7 @@ class KFQueue {
     }
     
     func removeCurrentSendRequestAndSendNext() {
-        KFLog.p("KFQueue removeCurrentSendRequestAndSendNext")
+        KMLog.p("KFQueue removeCurrentSendRequestAndSendNext")
         self.requestsToSend!.remove(at: 0)
         if self.requestsToSend!.count == 0 {
             self.filesToSend!.remove(at: 0)
@@ -350,7 +346,7 @@ class KFQueue {
                 try FileManager.default.removeItem(at: self.currentFile!)
                 self.currentFile = nil
             } catch let error {
-                KFError.logError(error)
+                KMError.logError(error)
             }
             if loadRequestsToSend() {
                 sendNextRequest()
@@ -364,14 +360,14 @@ class KFQueue {
                 let data = NSKeyedArchiver.archivedData(withRootObject: array)
                 try data.write(to: self.currentFile!, options: [NSData.WritingOptions.atomic])
             } catch let error {
-                KFError.logError(error)
+                KMError.logError(error)
             }
             sendNextRequest()
         }
     }
     
     func removeCurrentErrorSendRequestAndSendNext(_ filename: URL) {
-        KFLog.p("KFQueue removeCurrentErrorSendRequestAndSendNext")
+        KMLog.p("KFQueue removeCurrentErrorSendRequestAndSendNext")
         if self.errorFilesToSend != nil && self.errorFilesToSend![0] == filename {
             self.errorFilesToSend!.remove(at: 0)
         }
@@ -379,14 +375,14 @@ class KFQueue {
         do {
             try FileManager.default.removeItem(at: filename)
         } catch let error {
-            KFError.logError(error)
+            KMError.logError(error)
         }
         
         sendNextErrorRequest()
     }
     
     func skipCurrentErrorSendRequestAndSendNext(_ filename: URL) {
-        KFLog.p("KFQueue skipCurrentErrorSendRequestAndSendNext")
+        KMLog.p("KFQueue skipCurrentErrorSendRequestAndSendNext")
         if self.errorFilesToSend != nil && self.errorFilesToSend![0] == filename {
             self.errorFilesToSend!.remove(at: 0)
         }
@@ -395,7 +391,7 @@ class KFQueue {
     }
     
     func startSending() {
-        KFLog.p("KFQueue startSending")
+        KMLog.p("KFQueue startSending")
         if isReadyToSend() {
             loadFilesToSend()
             if loadRequestsToSend() {
@@ -405,11 +401,11 @@ class KFQueue {
     }
     
     func startSendingErrors() {
-        guard let lastAttemptDate = KFUserDefaults.lastAttemptToSendErrorQueue() else {
+        guard let lastAttemptDate = KMUserDefaults.lastAttemptToSendErrorQueue() else {
             return
         }
-        if fabs(lastAttemptDate.timeIntervalSinceNow) > KFQueue.kTimeToWaitBeforeSendingMessagesWithErrors {
-            KFUserDefaults.setLastAttemptToSendErrorQueue(Date())
+        if fabs(lastAttemptDate.timeIntervalSinceNow) > KMQueue.kTimeToWaitBeforeSendingMessagesWithErrors {
+            KMUserDefaults.setLastAttemptToSendErrorQueue(Date())
             loadErrorFilesToSend()
             sendNextErrorRequest()
         }
@@ -441,13 +437,13 @@ class KFQueue {
     func kitemetricsDirectoryWithSubDir(subdirectory: String) -> URL {
         let documentsDir = applicationLibraryDirectory()
         
-        let path = documentsDir.appendingPathComponent("Application Support", isDirectory:true).appendingPathComponent(KFDevice.appBundleId(), isDirectory:true).appendingPathComponent("Kitemetrics", isDirectory:true).appendingPathComponent(subdirectory, isDirectory:true)
+        let path = documentsDir.appendingPathComponent("Application Support", isDirectory:true).appendingPathComponent(KMDevice.appBundleId(), isDirectory:true).appendingPathComponent("Kitemetrics", isDirectory:true).appendingPathComponent(subdirectory, isDirectory:true)
         let fileManager = FileManager.default
-        if !fileManager.fileExists(atPath: path.absoluteString) {
+        if !fileManager.fileExists(atPath: path.relativePath) {
             do {
                 try fileManager.createDirectory(at: path, withIntermediateDirectories: true, attributes: nil)
             } catch let error {
-                KFError.logError(error)
+                KMError.logError(error)
             }
         }
         
@@ -457,16 +453,16 @@ class KFQueue {
     func isReadyToSend() -> Bool {
         if self.isApiKeySet == false {
             if Kitemetrics.shared.apiKey == "" {
-                KFError.logErrorMessage("Kitemetrics needs API Key, or API Key not yet loaded", sendToServer: false)
+                KMError.logErrorMessage("Kitemetrics needs API Key, or API Key not yet loaded", sendToServer: false)
             } else {
                 self.isApiKeySet = true
             }
         }
         
-        if self.isApiKeySet && self.reachability != nil && self.reachability!.connection != .unavailable {
+        if self.isApiKeySet && self.reachability.connection != .none {
             if Kitemetrics.shared.currentBackoffValue < Kitemetrics.shared.currentBackoffMultiplier {
                 Kitemetrics.shared.currentBackoffValue = Kitemetrics.shared.currentBackoffValue + 1
-                KFLog.p("Connection timeout, skip")
+                KMLog.p("Connection timeout, skip")
                 return false
             }
             
