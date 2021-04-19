@@ -1,11 +1,6 @@
 # Kitemetrics® iOS Client SDK
 
-<!-- [![CI Status](http://img.shields.io/travis/Kitefaster/Kitemetrics.svg?style=flat)](https://travis-ci.org/Kitefaster/Kitemetrics)
-[![Version](https://img.shields.io/cocoapods/v/Kitemetrics.svg?style=flat)](http://cocoapods.org/pods/Kitemetrics)
-[![License](https://img.shields.io/cocoapods/l/Kitemetrics.svg?style=flat)](http://cocoapods.org/pods/Kitemetrics)
-[![Platform](https://img.shields.io/cocoapods/p/Kitemetrics.svg?style=flat)](http://cocoapods.org/pods/Kitemetrics) -->
-
-The Kitemetrics® iOS Client SDK automatically logs Apple Search Ads keyword attributions, installs, and user sessions. In addition, you can log sign up and other custom events.  Reports are available from [http://kitemetrics.com/](http://kitemetrics.com/?utm_source=github&utm_medium=readme&utm_campaign=cp).
+The Kitemetrics® iOS Client SDK automatically logs Apple Search Ads keyword attributions, installs, and user sessions. In addition, you can log other custom events and assign them to a KPI.  Reports are available from [http://kitemetrics.com/](http://kitemetrics.com/?utm_source=github&utm_medium=readme&utm_campaign=cp).
 
 ## Contents
 
@@ -72,7 +67,7 @@ import Kitemetrics
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-      Kitemetrics.shared.initSession(apiKey: "API_KEY")
+      Kitemetrics.shared.initSession(withApiKey: "API_KEY")
       return true
   }
 ```
@@ -94,27 +89,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 ```
 
-#### Log Purchase Events
-##### Swift 4.0
+#### Attribute intsalls to Apple Search Ads
+
+Kitemetrics will automatically attribute installs to Apple Search Ads.
+
+However if your app requestes permission from the user to track via the `ATTrackingManager`, you can also get the clickDate by calling `Kitemetrics.shared.attributeWithTrackingAuthorization()` in the completion handler.
+
 ```swift
-    Kitemetrics.shared.logInAppPurchase(skProduct, quantity: 1)
-    //It is recommended to include the purchaseType if known
-    Kitemetrics.shared.logInAppPurchase(skProduct, quantity: 1, purchaseType: KFPurchaseType.appleInAppNonConsumable)
-
-    //If the SKProduct is unavailable you can log a purchase directly as
-    Kitemetrics.shared.logPurchase(productIdentifier: "productId", price: Decimal(0.99), currencyCode: "USD", quantity: 1, purchaseType: .eCommerce)
+ATTrackingManager.requestTrackingAuthorization(completionHandler: {_ in Kitemetrics.shared.attributeWithTrackingAuthorization() })
 ```
 
-##### Objective-C
-```objective-c
-    [[Kitemetrics shared] logInAppPurchase:skProduct quantity:1];
-    //It is recommended to include the purchaseType if known
-    [[Kitemetrics shared] logInAppPurchase:skProduct quantity:1 purchaseType:KFPurchaseTypeAppleInAppNonConsumable];
+#### Log Purchase Events
 
-    //If the SKProduct is unavailable you can log a purchase directly as
-    NSDecimal price = [[[NSDecimalNumber alloc] initWithFloat:0.99f] decimalValue];
-    [[Kitemetrics shared] logPurchaseWithProductIdentifier:@"productId" price:price currencyCode:@"USD" quantity:1 purchaseType:KFPurchaseTypeECommerce];
-```
+Kitemetrics will automatically log purchase events.
 
 Full list of pre-defined and custom events are available at the full [documentation](http://kitemetrics.com/docs/?utm_source=github&utm_medium=readme&utm_campaign=cp).
 
